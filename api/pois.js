@@ -6,15 +6,15 @@ const express = require('express');
 const router = express.Router();
 
 // give us access to the queries file
-const queries = require('../db/queries')
+const queries = require('../db/queries');
 
 // Middlewear check if id is valid
-function isValidId(req, res, next){
-  if(!isNaN(req.params.id)) return next();
+function isValidId(req, res, next) {
+  if (!isNaN(req.params.id)) return next();
   next(new Error('Invalid ID'));
 }
 
-function validPoi(poi){
+function validPoi(poi) {
   // if the place a string and does not have a value inside of it
   const hasPlace = typeof poi.place == 'string' && poi.place.trim() != '';
   const hasComment = typeof poi.comments == 'string' && poi.comments.trim() != '';
@@ -35,13 +35,13 @@ router.get('/', (req, res) => {
 router.get('/:id', isValidId, (req, res, next) => {
   queries.getOne(req.params.id)
     .then(poi => {
-      if(poi) {
+      if (poi) {
         res.json(poi);
       } else {
         //res.status(404);
-        next()
+        next();
       }
-    })
+    });
 });
 
 // // create new poi
@@ -58,25 +58,24 @@ router.get('/:id', isValidId, (req, res, next) => {
 
 // TODO: Bring router with validation back to live when the create new poi file is complete
 
-
 // create new poi
 router.post('/', (req, res, next) => {
-    queries.create(req.body).then(poi => {
-      res.json(poi[0]);
-    });
+  queries.create(req.body).then(poi => {
+    res.json(poi[0]);
+  });
 });
 
 // update pois
 router.put('/:id', isValidId, (req, res, next) => {
-  if(validPoi(req.body)){
+  if (validPoi(req.body)) {
     // update poi
     // id to update, body to update with
     queries.update(req.params.id, req.body).then(pois => {
-        res.json(pois[0]);
-      })
-    } else {
-      next(new Error('Invalid poi'));
-    }
+      res.json(pois[0]);
+    });
+  } else {
+    next(new Error('Invalid poi'));
+  }
 });
 
 // delete poi
