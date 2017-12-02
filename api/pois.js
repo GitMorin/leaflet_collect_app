@@ -56,6 +56,9 @@ router.get('/:id', isValidId, (req, res, next) => {
 //   }
 // });
 
+// TODO: Bring router with validation back to live when the create new poi file is complete
+
+
 // create new poi
 router.post('/', (req, res, next) => {
     queries.create(req.body).then(poi => {

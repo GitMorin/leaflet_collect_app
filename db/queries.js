@@ -1,4 +1,5 @@
 // we require the connection here, not knex!
+
 const knex = require('./knex');
 const knexPostgis = require('knex-postgis');
 const st = knexPostgis(knex);
@@ -17,6 +18,9 @@ module.exports = {
   getOne(id){
     return knex('poi').where('id', id).first();
   },
+
+  //TODO: Make dynamic
+
   create() {
     const sql = db.insert({
       geom: st.geomFromText('Point(-71.064544 44.28787)', 4326)
@@ -28,5 +32,5 @@ module.exports = {
   },
   delete(id) {
     return knex('poi').where('id', id).del();
-  }
-}
+  },
+};
