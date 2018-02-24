@@ -6,30 +6,32 @@ bodyParser        = require("body-parser");
 const app = express();
 
 // Import pois router to app.js
-const pois = require('./api/pois')
-
-// need to understand these better!
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+const pois = require('./api/pois');
+//const map = require('./routes/map');
+const map = require('./routes/map');
 
 // Load view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Use the route pois at the url /api/pois
+// need to understand these better!
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static('public'));
+
+// mount the pois api on the route api/pois
 app.use('/api/pois', pois);
 
-// Home route
-app.get("/", function(req, res){
-   res.render("home.ejs");
-});
+// map pages
+app.use('/', map);
 
 // catch 404 and forward error to handler
 app.use(function(req, res, next) {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
-})
+});
 
 // error handler
 app.use(function(err, req, res, next) {
