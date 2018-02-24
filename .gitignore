@@ -6,3 +6,4 @@ node_modules/
 knexfile.js
 
 .jshintrc
+todo.txt
