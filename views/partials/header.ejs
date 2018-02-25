@@ -1,18 +1,22 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 
-<!-- Navbar -->
-<!-- <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <!-- Image and text -->
+  <a class="navbar-brand" href="#">
+    <!-- <img src="/images/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt=""> -->
+    <img src="/images/brand/tk_logo_tran.png" width="30" height="30" class="d-inline-block align-top" alt=""> Sandfang
+  </a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <a class="navbar-brand" href="#">POIs</a>
-
+  <!-- <a class="navbar-brand" href="#">POIs</a> -->
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-toggle="modal" data-target="#selectObjectModal">Nytt Objekt</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#myModal">New Point</a>
+        <a class="nav-link" href="/new">Nytt Objekt form</a>
       </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
@@ -20,33 +24,261 @@
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
   </div>
-</nav> -->
+</nav>
 
-  <!-- <div id="container">
-    <div id="map"></div>
-  </div> -->
+<!-- NEW OBJECT MODAL -->
 
+<div class="modal fade" id="selectObjectModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
 
-<!-- Navbar -->
+      <div class="modal-body">
+        <p class="text-center">Velg vilken type objekt du vill laga</p>
+        <div class="container object">
 
-<!-- Modal -->
-<!-- <div class="modal fade" id="myModal">
+          <div>
+            <form id="newPoiForm">
+              <div id="asset_type" class="btn" data-toggle="buttons">
+                <label class="btn btn-warning btn-rounded col-4">
+                  <input type="radio" autocomplete="off" name="asset_type" value="sandfang"> Sandfang
+                  <i class="fa fa-diamond ml-2"></i>
+                </label>
+                <label class="btn btn-danger btn-rounded col-4">
+                  <input type="radio" autocomplete="off" name="asset_type" value="bisluk"> Bisluk
+                  <i class="fa fa-user ml-2"></i>
+                </label>
+                <label class="btn btn-info btn-rounded col-4">
+                  <input type="radio" autocomplete="off" name="asset_type" value="strindasluk"> Strindasluk
+                  <i class="fa fa-code ml-2"></i>
+                </label>
+                <!-- need value field!?? -->
+                <input type="hidden" class="form-control" id="x-coord" placeholder="X - Coord" name="xCoord">
+                <input type="hidden" class="form-control" id="y-coord" placeholder="y - Coord" name="yCoord">
+              </div>
+            </form>
+          </div>
+
+        </div>
+        <p>Trykk på nålen å panorere til position i kartet dær du vill lage et nytt objekt</p>
+        <!-- Corshair bilde lenk for at komma till krysset her.. -->
+        <!-- <span class="input-group-btn"> -->
+        <div class="text-center">
+          <button id="formPinButton" class="btn btn-default" type="button">
+            <span class="fa fa-map-marker fa-5x" data-dismiss="modal" aria-hidden="true">
+          </button>
+        </div>
+        <!-- </span> -->
+      </div>
+
+      <div class="modal-footer text-center">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Stæng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW OBJECT MODAL END -->
+
+<!-- ARE YOU SURE YOU WANT TO CREATE THIS POINT MODAL? -->
+
+<!-- source http://plnkr.co/edit/NePR0BQf3VmKtuMmhVR7?p=preview -->
+<!-- https://stackoverflow.com/questions/8982295/confirm-delete-modal-dialog-with-twitter-bootstrap -->
+<!-- Open when crosshair is pressed -->
+<div class="modal fade" role="dialog" id="confirm-object">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
+        <h5 class="modal-title">Bekreft lagring</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p>Modal body text goes here.</p>
+        <p>Er du sikker at du vil lage ett nytt
+          <span class="objectToCreate"></span> på denne position?</p>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Avbrutt</button>
+        <button type="button" class="btn btn-success" form="newPoiForm" id="lagreObject">Lagre</button>
       </div>
     </div>
   </div>
-</div> -->
-<!-- Modal End -->
+</div>
+<!-- ARE YOU SURE YOU WANT TO CREATE THIS POINT MODAL? END -->
+
+<!-- ASSET MODAL START -->
+<div class="modal" tabindex="-1" role="dialog" id="infoModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Objekt info</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <nav class="nav nav-tabs">
+          <a class="nav-item nav-link active" id="firstInfoModalTab" data-toggle="tab" href="#sandfang">Sandfang</a>
+          <a class="nav-item nav-link" data-toggle="tab" href="#sandfangTomming">Reg Tømming</a>
+          <a class="nav-item nav-link" data-toggle="tab" href="#sandfangLog">Log</a>
+          <a class="nav-item nav-link" data-toggle="tab" href="#sandfangSkade">Skade</a>
+          <a class="nav-item nav-link" data-toggle="tab" href="#sandfangBilde">Bilde</a>
+        </nav>
+
+        <div class="tab-content py-3">
+          <div class="tab-pane active" id="sandfang">
+            <div id="sandfangInfo">
+              <ul id="sandfangInfoList">
+                <li class="sandfangLi text-center featureType font-weight-bold"></li>
+                <li class="sandfangLi">
+                  <span class="text-left">Id: </span>
+                  <span class="text-right featureId"></span>
+                </li>
+                <li class="sandfangLi">
+                  <span class="text-left">Siste Tømmedato: </span>
+                  <span class="text-right">Dato Her</span>
+                </li>
+                <li class="sandfangLi">
+                  <span class="text-left">Har Bisluk: </span>
+                  <span class="text-right"></span>
+                </li>
+                <li class="sandfangLi">
+                  <span class="text-left">Reg Dato: </span>
+                  <span class="text-right featureRegdate"></span>
+                </li>
+              </ul>
+              <div class="center-btn">
+                <button type="button" id="btnEditSandfangInfo" class="btn btn-primary">Editere</button>
+              </div>
+            </div>
+
+            <div id="editSandfangInfo">
+
+              <ul class="list-group list-group-sm ulList">
+                <li class="list-group-item text-center font-weight-bold">
+                  <h6>Registrere Info</h6>
+                </li>
+
+                <li class="list-group-item list-group-item-light">
+                  <input type="checkbox" id="harBisluk" class="">
+                  <label for="harBisluk">Har Bisluk</label>
+                </li>
+                <li class="list-group-item list-group-item-light">
+                  <input type="checkbox" id="sandfangFjernet" class="">
+                  <label for="sandfangFjernet">Fjernet</label>
+                </li>
+
+              </ul>
+
+              <div id="btn-group-sandfang">
+                <button type="button" class="btn btn-success">Lagre</button>
+                <button type="button" id="hideEditSandfangInfoForm" class="btn btn-danger">Avbryt</button>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="tab-pane" id="sandfangTomming">
+            <div id="editTomming">
+              <form id="registrerTommingForm">
+                <select name="fyllingsgrad" class="form-control form-control-lg">
+                  <option selected disabled>Velg fyllnadsnivå ved Tømming</option>
+                  <option value="1">1/3</option>
+                  <option value="2">2/3</option>
+                  <option value="3">Full</option>
+                </select>
+                <div class="center-btn">
+                  <button type="submit" id="registrerTommingForm" class="btn btn-primary">Registrere Tømming</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="tab-pane" id=sandfangLog>
+            <table class="table table-striped table-sm" id="sandfangLogTable">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Tømmedato</th>
+                  <th scope="col">Fyllingsgrad</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Data go here from server -->
+              </tbody>
+            </table>
+          </div>
+          <div class="tab-pane" id="sandfangSkade">
+            <div class="container">
+
+              <div id="sandfangSkadeInfo">
+                <ul class="list-group skadeLog">
+                  <li class="list-group-item active">Trykk
+                    <strong>
+                      <i>Skade reparert</i>
+                    </strong> etter du har utført nødvendig reparasjon på objektet for å fjerne det fra listen</li>
+                  <!-- Database will fill in the rest -->
+                </ul>
+                <div class="center-btn">
+                  <button type="button" id="btnEditSandfangSkade" class="btn btn-primary">Registrere Skade</button>
+                </div>
+              </div>
+
+              <div id="editSandfangSkade">
+                <form id="registrerSkadeForm">
+                  <ul class="list-group list-group-sm ulList">
+                    <li class="list-group-item text-center font-weight-bold">
+                      <h6>Registrere skade</h6>
+                    </li>
+
+                    <li class="list-group-item list-group-item-light">
+                      <input type="checkbox" name="skade_type[]" id="feilLokk" value="feil_lokk" class="myCheckbox">
+                      <label for="feilLokk">Feil lokk</label>
+                    </li>
+                    <li class="list-group-item list-group-item-light">
+                      <input type="checkbox" name="skade_type[]" id="skadetLokk" value="skadet_lokk" class="myCheckbox">
+                      <label for="skadetLokk">Skadet lokk</label>
+                    </li>
+                    <li class="list-group-item list-group-item-light">
+                      <input type="checkbox" name="skade_type[]" id="manglendeDykkert" value="manglendeDykkert" class="myCheckbox">
+                      <label for="manglendeDykkert">Manglende dykkert</label>
+                    </li>
+                    <li class="list-group-item list-group-item-light">
+                      <input type="checkbox" name="skade_type[]" id="tettStikkledning" value="tett_stikkledning" class="myCheckbox">
+                      <label for="tettStikkledning">Tett stikkledning</label>
+                    </li>
+                    <li class="list-group-item list-group-item-light">
+                      <input type="checkbox" name="skade_type[]" id="tettUtlop" value="tett_utlopp" class="myCheckbox">
+                      <label for="tettUtlop">Tett utløp</label>
+                    </li>
+                    <li class="list-group-item list-group-item-light">
+                      <input type="checkbox" name="skade_type[]" id="skadetKumrug" value="skadet_kumrug" class="myCheckbox">
+                      <label for="skadetKumrug">Skadet kumrung</label>
+                    </li>
+                  </ul>
+                  <div id="btn-group-sandfang">
+                    <button type="submit" form="registrerSkadeForm" class="btn btn-success">Lagre</button>
+                    <button type="button" id="hideEditSandfangSkadeForm" class="btn btn-danger">Avbryt</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane" id="sandfangBilde">
+            <p>Bilde</p>
+          </div>
+        </div>
+
+
+      </div>
+      <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div> -->
+    </div>
+  </div>
+</div>
+<!-- ASSET MODAL END -->

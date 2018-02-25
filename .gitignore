@@ -7,3 +7,4 @@ knexfile.js
 
 .jshintrc
 todo.txt
+.gitignore
