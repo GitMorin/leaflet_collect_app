@@ -191,9 +191,10 @@ $('#registrerSkadeForm').submit(function (e) {
   }).get();
 
   console.log(selectedIds);
+  toBeSent = [];
+  toAppend = [];
   selectedIds.forEach(function (selected) {
-    toBeSent = [];
-    toAppend = [];
+    
     console.log(selected);
     ref = {
       name: 'poi_id',
@@ -211,9 +212,12 @@ $('#registrerSkadeForm').submit(function (e) {
       data: toBeSent
     }).
     done(function (skade) {
+      let items = [];
       selectedIds.forEach(function (selectedSkade) {
-        $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + selectedSkade + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
+        items.push('<li class="list-group-item list-group-item-action">' + selectedSkade + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>')
       });
+      console.log(items);
+      $('.list-group.skadeLog').append(( items.join('') ));
     });
     // if sandfangSkadeInfo has content then nothing, but what when they dont have a record? Ignore?
 
@@ -225,24 +229,6 @@ $('#registrerSkadeForm').submit(function (e) {
     $('#sandfangSkadeInfo').show();
     // get all skader
   });
-});
-
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-  if ($(e.target).attr('href') == '#sandfangSkade') {
-    // let url = '/api/pois/skade/' + current_id;
-    // $.get({
-    //   url: url
-    // })
-    // .done(function (data){
-    //   data.forEach (function(skade) {
-    //     $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + skade.skade_type +'<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
-    //   })
-    // })
-    // .fail(function (jqXHR, status, error) {
-    //   console.log('Status: ' + status + '\n' + 'Error: ' + error);
-    // });
-
-  };
 });
 
 $('#registrerTommingForm').submit(function (e) {

@@ -35,22 +35,6 @@ router.get('/wkt', (req, res) => {
     });
 });
 
-// //// post new tomming
-// router.post('/tomming', (req, res) => {
-//   const tomming = {
-//     poi_id: req.body.poi_id,
-//     fyllingsgrad: req.body.fyllingsgrad,
-//     kommentar: req.body.kommentar,
-//   }
-//   queries.createTomming(tomming)
-//   .then(tomming => {
-//     res.json(tomming);
-//   })
-//   .catch(function (err) {
-//     console.error('get comment error ' + err);
-//   });
-// });
-
 // post new tomming
 router.post('/tomming', (req, res) => {
   queries.createTomming(req.body)
