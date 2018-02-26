@@ -102,9 +102,14 @@ poi.on('click', function (e) {
       url: urlSkade
     })
     .done(function (data) {
+      // add skade to list
+      console.log(data);
       data.forEach(function (skade) {
         $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + skade.skade_type + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
-      })
+        // hide checkbox in form where if skade is already registered
+        // if skade == possible value to check
+        checekWithValue(skade.skade_type);
+      });
     })
     .fail(function (jqXHR, status, error) {
       console.log('Status: ' + status + '\n' + 'Error: ' + error);
@@ -123,6 +128,18 @@ poi.on('click', function (e) {
   $("#infoModal").modal();
   objectType = e.layer.feature.properties.asset_type;
 });
+
+
+// hide element with value of val
+function checekWithValue(val) {
+  // return element that has value
+  // need to be specofic to which checkboxes
+  $('input[type="checkbox"]').filter(function() {
+      return this.value == val;
+  }).next().hide();
+  console.log(val);
+  //.hide();
+}
 
 poi.addTo(map);
 
@@ -184,16 +201,17 @@ $('#newPoiForm').submit(function (e) { // handle the submit event
 
 $('#registrerSkadeForm').submit(function (e) {
   e.preventDefault();
-  let toBeSent = [];
+  //let toBeSent = [];
   let formData = $(this).serializeArray();
   let selectedIds = $("input:checkbox:checked").map(function () {
     return $(this).val();
   }).get();
 
   console.log(selectedIds);
-  toBeSent = [];
-  toAppend = [];
+  //toBeSent = [];
+  //toAppend = [];
   selectedIds.forEach(function (selected) {
+    let toBeSent = [];
     
     console.log(selected);
     ref = {
@@ -204,8 +222,11 @@ $('#registrerSkadeForm').submit(function (e) {
       name: 'skade_type',
       value: selected
     };
+    
     toBeSent.push(ref);
     toBeSent.push(skade);
+    console.log(toBeSent);
+  
     $.post({
       type: 'POST',
       url: '/api/pois/skade',
@@ -223,7 +244,7 @@ $('#registrerSkadeForm').submit(function (e) {
 
     // this might all be able to go inside the then or done state
     // clear skade form
-    //$('#registrerSkadeForm').trigger("reset");
+    $('#registrerSkadeForm').trigger("reset");
     // hide reg skade form
     $('#editSandfangSkade').hide();
     $('#sandfangSkadeInfo').show();
