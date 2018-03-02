@@ -131,14 +131,16 @@ poi.on('click', function (e) {
 });
 
 function renameSkade(skade) {
-  let skade = skade.skade_type;
+  console.log(skade);
   
   switch (skade) {
-    case 'feilLokk': return 'Feil Lokk';
-    case 'skadetLokk': return 'Skadet Lokk';
+    case 'feil_lokk': return 'Feil Lokk';
+    case 'skadet_lokk': return 'Skadet Lokk';
     case 'manglendeDykkert': return 'Manglende dykkert';
-    case 'tettStikkledning': return 'Tett stikkledning';
-    case 'tettUtlop': return 'Tett utløp';
+    case 'tett_stikkledning': return 'Tett stikkledning';
+    case 'tett_utlopp': return 'Tett utløp';
+    case 'skadet_kumrug': return 'Skadet kumrug';
+    default: return 'Ukjent';
   };
 };
 
