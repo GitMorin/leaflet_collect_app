@@ -249,7 +249,7 @@ $('#registrerSkadeForm').submit(function (e) {
       // declare list item array
       let items = [];
       selectedIds.forEach(function (selectedSkade) {
-        // remove selected values from possible values to check
+        checekWithValue(selectedSkade);
         items.push('<li class="list-group-item list-group-item-action">' + renameSkade(selectedSkade) + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>')
       });
       console.log(items);
