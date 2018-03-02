@@ -105,7 +105,8 @@ poi.on('click', function (e) {
       // add skade to list
       console.log(data);
       data.forEach(function (skade) {
-        $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + skade.skade_type + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
+        let rename = renameSkade(skade.skade_type);
+        $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + rename + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
         // hide checkbox in form where if skade is already registered
         // if skade == possible value to check
         checekWithValue(skade.skade_type);
@@ -129,6 +130,17 @@ poi.on('click', function (e) {
   objectType = e.layer.feature.properties.asset_type;
 });
 
+function renameSkade(skade) {
+  let skade = skade.skade_type;
+  
+  switch (skade) {
+    case 'feilLokk': return 'Feil Lokk';
+    case 'skadetLokk': return 'Skadet Lokk';
+    case 'manglendeDykkert': return 'Manglende dykkert';
+    case 'tettStikkledning': return 'Tett stikkledning';
+    case 'tettUtlop': return 'Tett utløp';
+  };
+};
 
 // hide element with value of val
 function checekWithValue(val) {
@@ -201,6 +213,7 @@ $('#newPoiForm').submit(function (e) { // handle the submit event
 
 $('#registrerSkadeForm').submit(function (e) {
   e.preventDefault();
+
   //let toBeSent = [];
   let formData = $(this).serializeArray();
   let selectedIds = $("input:checkbox:checked").map(function () {
@@ -233,6 +246,7 @@ $('#registrerSkadeForm').submit(function (e) {
       data: toBeSent
     }).
     done(function (skade) {
+      // declare list item array
       let items = [];
       selectedIds.forEach(function (selectedSkade) {
         items.push('<li class="list-group-item list-group-item-action">' + selectedSkade + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>')
@@ -240,8 +254,8 @@ $('#registrerSkadeForm').submit(function (e) {
       console.log(items);
       $('.list-group.skadeLog').append(( items.join('') ));
     });
-    // if sandfangSkadeInfo has content then nothing, but what when they dont have a record? Ignore?
 
+    // if sandfangSkadeInfo has content then nothing, but what when they dont have a record? Ignore?
     // this might all be able to go inside the then or done state
     // clear skade form
     $('#registrerSkadeForm').trigger("reset");
@@ -302,11 +316,20 @@ $('#infoModal').on('hidden.bs.modal', function () {
   $('#sandfangLogTable > tbody > tr:nth-child(n+1)').remove(); // clear Tømming log table
   $('a.nav-item').removeClass('active');
   $('a.nav-item:first').addClass('active');
+
   // Clear Skade table
   $('.list-group.skadeLog > li:nth-child(n+2)').remove();
+
   // Make first tab pane active in Modal
   $('.tab-pane').removeClass('active');
   $('#sandfang.tab-pane').addClass('active');
+
+  // reset to show all checkboxes when modal close
+  $('#registrerSkadeForm label').show();
+
+  // Make sure skade info is shown after the modal is closed
+  $('#editSandfangSkade').hide();
+  $('#sandfangSkadeInfo').show();
 });
 
 // click lagre object
