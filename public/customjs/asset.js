@@ -108,8 +108,7 @@ poi.on('click', function (e) {
         let rename = renameSkade(skade.skade_type);
         $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + rename + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
         // hide checkbox in form where if skade is already registered
-        // if skade == possible value to check
-        checekWithValue(skade.skade_type);
+        hideRegisteredSkade(skade.skade_type);
       });
     })
     .fail(function (jqXHR, status, error) {
@@ -143,7 +142,7 @@ function renameSkade(skade) {
 };
 
 // hide element with value of val
-function checekWithValue(val) {
+function hideRegisteredSkade(val) {
   // return element that has value
   // need to be specofic to which checkboxes
   $('input[type="checkbox"]').filter(function() {
@@ -214,57 +213,44 @@ $('#newPoiForm').submit(function (e) { // handle the submit event
 $('#registrerSkadeForm').submit(function (e) {
   e.preventDefault();
 
-  //let toBeSent = [];
-  let formData = $(this).serializeArray();
+  //let formData = $(this).serializeArray();
   let selectedIds = $("input:checkbox:checked").map(function () {
     return $(this).val();
   }).get();
-
   console.log(selectedIds);
-  //toBeSent = [];
-  //toAppend = [];
+
   selectedIds.forEach(function (selected) {
-    let toBeSent = [];
-    
-    console.log(selected);
-    ref = {
-      name: 'poi_id',
-      value: current_id
-    };
-    skade = {
-      name: 'skade_type',
-      value: selected
-    };
-    
-    toBeSent.push(ref);
-    toBeSent.push(skade);
-    console.log(toBeSent);
+
+    // create empty object
+    let sendObject = {};
+
+    // add to that object
+    sendObject["skade_type"] = selected;
+    sendObject["poi_id"] = current_id;
+
+    console.log(sendObject);
   
     $.post({
       type: 'POST',
       url: '/api/pois/skade',
-      data: toBeSent
+      data: sendObject
     }).
     done(function (skade) {
-      // declare list item array
       let items = [];
-      selectedIds.forEach(function (selectedSkade) {
-        checekWithValue(selectedSkade);
-        items.push('<li class="list-group-item list-group-item-action">' + renameSkade(selectedSkade) + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>')
-      });
-      console.log(items);
+
+      items.push('<li class="list-group-item list-group-item-action">' + renameSkade(skade[0].skade_type) + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>')
+      hideRegisteredSkade(skade[0].skade_type);
       $('.list-group.skadeLog').append(( items.join('') ));
     });
 
-    // if sandfangSkadeInfo has content then nothing, but what when they dont have a record? Ignore?
     // this might all be able to go inside the then or done state
     // clear skade form
     $('#registrerSkadeForm').trigger("reset");
     // hide reg skade form
     $('#editSandfangSkade').hide();
     $('#sandfangSkadeInfo').show();
-    // get all skader
   });
+
 });
 
 $('#registrerTommingForm').submit(function (e) {
@@ -302,14 +288,6 @@ $('#registrerTommingForm').submit(function (e) {
       $('#sandfangLogTable > tbody').append('<tr><th scope="row">' + String(rows) + '</th><td>' + date + '</td><td>' + fyllingsgrad + '</td></tr>');
     })
 });
-
-// $('#infoModal > a.nav-item.nav-link.active').click(function(e) {
-//   alert('clicked');
-// });
-
-// $('a.nav-item:first').click(function() {
-//   alert("click!");
-// });
 
 // when infoModal close do actions
 $('#infoModal').on('hidden.bs.modal', function () {
