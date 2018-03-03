@@ -35,9 +35,13 @@ module.exports = {
     const sql = db.insert(poi).returning('*').into('poi');
     console.log(sql.toString());
     return sql;
-},
+  },
   update(id, poi) {
     return knex('poi').where('id', id).update(poi, '*');
+  },
+  // update registered skade
+  updateSkade(skader_id, reparert) {
+    return knex('skader').where('skader_id', skader_id).update(reparert, '*');
   },
   delete(id) {
     return knex('poi').where('id', id).del();

@@ -170,6 +170,17 @@ router.put('/:id', isValidId, (req, res) => {
   }
 });
 
+// update skader
+router.put('/skade/:id', (req, res) => {
+  queries.updateSkade(req.params.id, req.body)
+  .then(skade => {
+    res.json(skade[0]);
+  })
+  .catch(err => {
+    console.error('Update POI error', err);
+  });
+});
+
 // delete poi
 router.delete('/:id', isValidId, (req, res) => {
   queries.delete(req.params.id)
