@@ -171,7 +171,7 @@ router.put('/:id', isValidId, (req, res) => {
 });
 
 // update skader
-router.put('/skade/:id', (req, res) => {
+router.put('/skade/:id/edit', (req, res) => {
   queries.updateSkade(req.params.id, req.body)
   .then(skade => {
     res.json(skade[0]);

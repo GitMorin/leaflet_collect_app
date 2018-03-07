@@ -105,8 +105,9 @@ poi.on('click', function (e) {
       // add skade to list
       console.log(data);
       data.forEach(function (skade) {
+        let skaderid = skade.skader_id;
         let rename = renameSkade(skade.skade_type);
-        $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + rename + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
+        $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + rename + '<a <href="/todos/' + skaderid + '/edit" class="btn btn-sm btn-warning">Edit ' + skaderid + '</a><button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
         // hide checkbox in form where if skade is already registered
         hideRegisteredSkade(skade.skade_type);
       });
