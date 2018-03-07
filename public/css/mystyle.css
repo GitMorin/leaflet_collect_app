@@ -57,6 +57,10 @@ text-transform: uppercase;
 display: none;
 }
 
+.edit-skader-form {
+  display: inline;
+}
+
 .list-group-item.active {
 background-color: gray;
 border-color: black;

@@ -107,7 +107,21 @@ poi.on('click', function (e) {
       data.forEach(function (skade) {
         let skaderid = skade.skader_id;
         let rename = renameSkade(skade.skade_type);
-        $('.list-group.skadeLog').append('<li class="list-group-item list-group-item-action">' + rename + '<a <href="/todos/' + skaderid + '/edit" class="btn btn-sm btn-warning">Edit ' + skaderid + '</a><button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>');
+        $('.list-group.skadeLog').append(
+          `
+          <li class="list-group-item list-group-item-action">
+          <span>
+            ${rename}
+          </span> 
+          <form action="/skade/${skade.skader_id}/edit" class="edit-skader-form">
+              <input type="hidden" value="${skade.skade_type}" name="skade_type">
+              <input type="hidden" value="${skade.skader_id}" name="skader_id">
+              <input type="hidden" value="true" name="reparert">          
+              <button type="submit" class="btn btn-danger btn-sm float-right">Fjern skade</button> 
+          </form>   
+          </li>
+          `
+        );
         // hide checkbox in form where if skade is already registered
         hideRegisteredSkade(skade.skade_type);
       });
@@ -152,6 +166,12 @@ function hideRegisteredSkade(val) {
   console.log(val);
   //.hide();
 }
+
+//attach submit listenet to the edit-skader-form
+$('#registrert-skader-list').on('submit', '.edit-skader-form', function(e) {
+  e.preventDefault();
+  alert('Submit clicked!');
+});
 
 poi.addTo(map);
 
