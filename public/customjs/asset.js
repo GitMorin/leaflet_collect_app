@@ -113,7 +113,7 @@ poi.on('click', function (e) {
           <span>
             ${rename}
           </span> 
-          <form action="/skade/${skade.skader_id}/edit" class="edit-skader-form">
+          <form action="api/pois/skade/${skade.skader_id}/edit" class="edit-skader-form">
               <input type="hidden" value="${skade.skade_type}" name="skade_type">
               <input type="hidden" value="${skade.skader_id}" name="skader_id">
               <input type="hidden" value="true" name="reparert">          
@@ -170,7 +170,23 @@ function hideRegisteredSkade(val) {
 //attach submit listenet to the edit-skader-form
 $('#registrert-skader-list').on('submit', '.edit-skader-form', function(e) {
   e.preventDefault();
-  alert('Submit clicked!');
+  let confirmResponse = confirm('Er du sikker att du har repapert skaden?');
+  if(confirmResponse) {
+    let skade = $(this).serialize();
+    let actionUrl = $(this).attr('action');
+    $originalItem = $(this).parent('.list-group-item');
+    console.log(skade);
+    $.ajax({
+      url: actionUrl,
+      data: skade,
+      type: 'PUT',
+      originalItem: $originalItem,
+      success: function(data) {
+        console.log(data);
+        $originalItem.remove();
+      }
+    })
+  }
 });
 
 poi.addTo(map);
