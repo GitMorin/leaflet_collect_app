@@ -341,8 +341,17 @@ $('#registrerTommingForm').submit(function (e) {
       var dager = ["Søndag", "Mondag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
       let regdato = new Date();
       let date = dager[regdato.getDay()] + ' ' + regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear() + ' <strong>kl.</strong>' + regdato.getHours() + '.' + (`0${regdato.getMinutes()}`).slice(-2);
-      // get tomming value that was selected
-      $('#sandfangLogTable > tbody').append('<tr><th scope="row">' + String(rows) + '</th><td>' + date + '</td><td>' + fyllingsgrad + '</td></tr>');
+
+      // add latest tomming to table
+      $('#sandfangLogTable > tbody').append(
+        `
+        <tr>
+          <th scope="row">${String(rows)}</th>
+          <td>${date}</td>
+          <td>${fyllingsgrad}</td>
+        </tr>
+        `
+      );
     })
 });
 
