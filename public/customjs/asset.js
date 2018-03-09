@@ -274,9 +274,29 @@ $('#registrerSkadeForm').submit(function (e) {
     }).
     done(function (skade) {
       let items = [];
+      // add form to the new item, make sure the submit listener also work on these new elements!
+      items.push(
+        `
+        <li class="list-group-item list-group-item-action">
+          <span>
+          ${renameSkade(skade[0].skade_type)}
+          </span> 
+          <form action="api/pois/skade/${skade[0].skader_id}/edit" class="edit-skader-form">
+              <input type="hidden" value="${skade[0].skade_type}" name="skade_type">
+              <input type="hidden" value="${skade[0].skader_id}" name="skader_id">
+              <input type="hidden" value="true" name="reparert">          
+              <button type="submit" class="btn btn-danger btn-sm float-right">Fjern skade</button> 
+          </form>   
+        </li>
+        `
 
-      items.push('<li class="list-group-item list-group-item-action">' + renameSkade(skade[0].skade_type) + '<button type="button" class="btn btn-danger btn-sm float-right">Skade reparert</button></li>')
+        // `
+        // <li class="list-group-item list-group-item-action">${renameSkade(skade[0].skade_type)}
+        // <button type="submit" class="btn btn-danger btn-sm float-right">Fjern Skade</button></li>
+        // `
+        )
       hideRegisteredSkade(skade[0].skade_type);
+
       $('.list-group.skadeLog').append(( items.join('') ));
     });
 

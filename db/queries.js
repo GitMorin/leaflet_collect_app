@@ -41,7 +41,9 @@ module.exports = {
   },
   // update registered skade
   updateSkade(skader_id, reparert) {
-    return knex('skader').where('skader_id', skader_id).update(reparert, '*');
+    const sql = knex('skader').where('skader_id', skader_id).update(reparert, '*');
+    console.log(sql.toString());
+    return sql;
   },
   delete(id) {
     return knex('poi').where('id', id).del();
@@ -78,11 +80,4 @@ module.exports = {
     console.log(sql.toString());
     return sql;
   },
-  // getSkade(id) {
-  //   const sql = knex('skader').whereNot({
-  //     reparert: 'true'
-  //   }).select('*')
-  //   console.log(sql.toString());
-  //   return sql;
-  // },
 };
