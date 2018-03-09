@@ -67,20 +67,22 @@ module.exports = {
     console.log(sql.toString());
     return sql;
   },
-  // get skade for id
-  // getSkade(id) {
-  //   const sql = knex.from('skader')
-  //   // .innerJoin('fyllingsgrad', 'regdato', 'poi.id', 'tomming.poi_id')
-  //   //.innerJoin('*')
-  //   .where('poi_id', id);
-  //   console.log(sql.toString());
-  //   return sql;
-  // },
+  //get skade for id
   getSkade(id) {
-    const sql = knex('skader').whereNot({
-      reparert: 'true'
-    }).select('*')
+    const sql = knex.from('skader')
+    // .innerJoin('fyllingsgrad', 'regdato', 'poi.id', 'tomming.poi_id')
+    //.innerJoin('*')
+    .where('poi_id', id)
+    .whereNull('reparert')
+    .orWhere({'reparert': 'f'})
     console.log(sql.toString());
     return sql;
   },
+  // getSkade(id) {
+  //   const sql = knex('skader').whereNot({
+  //     reparert: 'true'
+  //   }).select('*')
+  //   console.log(sql.toString());
+  //   return sql;
+  // },
 };
