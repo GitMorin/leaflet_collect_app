@@ -88,9 +88,17 @@ poi.on('click', function (e) {
       var dager = ["Søndag", "Mondag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
       data.forEach(function (tomming) {
         let regdato = new Date(tomming.regdato);
-        let date = dager[regdato.getDay()] + ' ' + regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear() + ' <strong>kl.</strong>' + regdato.getHours() + '.' + (`0${regdato.getMinutes()}`).slice(-2);
+        let date = '<i class="far fa-calendar-alt"></i>' + ' ' + dager[regdato.getDay()] + ' ' + regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear() + ' <i class="far fa-clock"></i>' + ' ' + regdato.getHours() + '.' + (`0${regdato.getMinutes()}`).slice(-2);
         i += 1;
-        $('#sandfangLogTable > tbody').append('<tr><th scope="row">' + String(i) + '</th><td>' + date + '</td><td>' + tomming.fyllingsgrad + '</td></tr>');
+        $('#sandfangLogTable > tbody').append(
+          `
+        <tr>
+          <th scope="row">${String(i)}</th>
+          <td></i>${date}</td>
+          <td>${tomming.fyllingsgrad}</td>
+        </tr>
+        `
+        );
       })
     })
     .fail(function (jqXHR, status, error) {
@@ -340,7 +348,7 @@ $('#registrerTommingForm').submit(function (e) {
       // fill in regdato (this can be refactored)
       var dager = ["Søndag", "Mondag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
       let regdato = new Date();
-      let date = dager[regdato.getDay()] + ' ' + regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear() + ' <strong>kl.</strong>' + regdato.getHours() + '.' + (`0${regdato.getMinutes()}`).slice(-2);
+      let date = '<i class="far fa-calendar-alt"></i>' + ' ' + dager[regdato.getDay()] + ' ' + regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear() + ' <i class="far fa-clock"></i>' + ' ' + regdato.getHours() + '.' + (`0${regdato.getMinutes()}`).slice(-2);
 
       // add latest tomming to table
       $('#sandfangLogTable > tbody').append(
