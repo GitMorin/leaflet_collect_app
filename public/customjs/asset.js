@@ -95,7 +95,7 @@ poi.on('click', function (e) {
         <tr>
           <th scope="row">${String(i)}</th>
           <td></i>${date}</td>
-          <td>${tomming.fyllingsgrad}</td>
+          <td>${renameFylling(tomming.fyllingsgrad)}</td>
         </tr>
         `
         );
@@ -161,6 +161,16 @@ function renameSkade(skade) {
     case 'tett_utlopp': return 'Tett utløp';
     case 'skadet_kumrug': return 'Skadet kumrug';
     default: return 'Ukjent';
+  };
+};
+
+function renameFylling(fylling) {
+  switch (fylling) {
+    case '0': return 'Tom';
+    case '1': return '1:3';
+    case '2': return '2:3';
+    case '3': return 'Full';
+    default: return 'Noe gikk galt :(';
   };
 };
 
@@ -356,7 +366,7 @@ $('#registrerTommingForm').submit(function (e) {
         <tr>
           <th scope="row">${String(rows)}</th>
           <td>${date}</td>
-          <td>${fyllingsgrad}</td>
+          <td>${renameFylling(fyllingsgrad)}</td>
         </tr>
         `
       );
