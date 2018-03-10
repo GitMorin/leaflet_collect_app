@@ -8,11 +8,15 @@
 <body>
   <% include ../partials/header %>
 
-    <div id="map"></div>
+    <div id="map">
+    
+<div style="position: relative; z-index: 9999; padding-left: 50%;padding-right: 10px">
+      <input type="button" id="btnComplete" value="Opret Rute" onclick="createRoute()" class="btnStyle span3" />
+</div>
 
-  <footer>
+  <!--<footer>
     <% include ../partials/footer %>
-  </footer>
+  </footer> -->
 
   <% include ../partials/scripts %>
 </body>
