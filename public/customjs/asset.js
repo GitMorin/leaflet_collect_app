@@ -2,7 +2,42 @@ var map = L.map('map').setView([63.429200, 10.394146], 14);
 var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+});
+
+var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+	subdomains: 'abcd',
+	minZoom: 1,
+	maxZoom: 16,
+	ext: 'png'
+});
+
+let basemaps = L.layerGroup()
+.addLayer(OpenStreetMap_Mapnik) // default layer to show
+.addTo(map);
+
+$(".dropdown-item").click(function(event) {
+  event.preventDefault();
+  let selectedLayer = ($(this).attr("value"));
+  console.log(selectedLayer);
+  basemaps.clearLayers()
+  basemaps.addLayer(selectedBaseLayer(selectedLayer));
+});
+
+function selectedBaseLayer(layer) {
+  switch (layer) {
+    case 'OpenStreetMap_Mapnik': return OpenStreetMap_Mapnik;
+    case 'Stamen_Watercolor': return Stamen_Watercolor;
+    default: return 'Ukjent';
+  };
+};
+
+// $("#basemap-water-colour").click(function(event) {
+//   event.preventDefault();
+//   basemaps.clearLayers()
+//   //$(this).addClass('selected');
+//   basemaps.addLayer(Stamen_Watercolor)
+// });
 
 // Click edit button to hide list and show form
 $("#btnEditSandfangInfo").click(function (e) {
