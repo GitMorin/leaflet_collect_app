@@ -70,24 +70,6 @@ border-color: black;
 color: black;
 }
 
-/* Find out how to make li change color when hover! */
-
-/* .sandfangLiSkade {
-margin: 0 0 3px 0;
-background-color: #e9ecef;
-height: 2em;
-padding-left: 1em;
-padding-right: 1em;
-text-align: center;
-color: #fafafa;
-} */
-
-/* .sandfangLiSkade.active {
-background-color: #f5c6cb;
-color: black;
-font-weight: bold;
-} */
-
 span.skadet::before, span.skadet::after {
 font-family: FontAwesome;
 font-size: 1.25em;
@@ -151,8 +133,10 @@ ul.list-group.list-group-sm li {
 padding: 0.3rem 1.25rem;
 }
 
+/* Checkboxes in modal */
+
 /* style the checkbox labels */
-label {
+label.modal-label {
   /* display: block; */
   line-height: 35px;
   width: 80%;
@@ -164,20 +148,28 @@ label {
   height: 40px;
 }
 
+
 /* Dont display defualt checkbox */
-input[type=checkbox] {
-display: none;
+input.checkbox-modal[type=checkbox] {
+  display: none;
 }
 
-input:checked + label {
+input.checkbox-modal:checked + label {
 /* border: solid 3px black; */
 background-color: #f5c6cb;
 color: black;
 font-weight: bold;
 }
 
-input:checked + label:before {
-content: "\2713"
+input.checkbox-modal:checked + label:before {
+  content: "\2713"
+}
+
+/* Tømming modal stuff */
+
+select{
+  text-align-last:center;
+  font-weight: bold;
 }
 
 /* Modal content behavior here */
@@ -191,7 +183,3 @@ text-align: center;
 margin-top: 15px;
 }
 
-select{
-  text-align-last:center;
-  font-weight: bold;
-}
