@@ -19,9 +19,6 @@ module.exports = {
   getOne(id) {
     return knex('poi').where('id', id).first();
   },
-  getAllwkt() {
-    return db.select('id', st.asText('geom')).from('poi');
-  },
   // get latest
   getLatest() {
     return knex('poi').orderBy('id', 'desc').limit(1);

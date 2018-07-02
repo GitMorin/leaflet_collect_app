@@ -199,7 +199,6 @@ var tempIcon = L.icon({
 function showInfo(current_id, layer) {
   console.log(layer)
   // Make ajax call to populate lists
-
   //current_id = e.layer.feature.properties.id;
 
   // get tomming
@@ -264,7 +263,7 @@ function showInfo(current_id, layer) {
 
   $(".featureType").text('');
   $(".featureId").text('');
-  $(".featurePlace").text('');
+  //$(".featurePlace").text('');
   $(".featureRegdate").text('');
   $(".featureType").append(layer.properties.asset_type);
 
