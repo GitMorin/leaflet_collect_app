@@ -4,7 +4,6 @@ const queries = require('../db/queries');
 
 // get all pois
 router.get('/', (req, res) => {
-  console.dir(req);
   queries.getAll()
     .then(pois => {
       res.json(pois.rows[0].row_to_json);
@@ -18,6 +17,7 @@ router.get('/last', (req, res) => {
   queries.getLatestRaw()
     .then(poi => {
       res.json(poi.rows[0].row_to_json);
+      console.log(poi);
     })
     .catch(err => {
       console.error('Get latest POI error', err);
@@ -40,6 +40,7 @@ router.post('/tomming', (req, res) => {
   queries.createTomming(req.body)
   .then(tomming => {
     res.json(tomming);
+    console.log(tomming);
   })
   .catch(function (err) {
     console.error('get tomming error ' + err);
@@ -56,15 +57,44 @@ router.get('/tomming/:id', (req, res) => {
   });
 });
 
-router.post('/skade', (req, res) => {
-  queries.createSkade(req.body)
-  .then(skade => {
-    res.json(skade);
-  })
-  .catch(function (err) {
-    console.error('get comment error ' + err);
+router.post('/skade', (req, res) => 
+{ 
+  console.log('im in route now');
+  damages = req.body.skade_type;
+  poi_id = req.body.poi_id;
+  let data = [];
+  
+  damages.forEach(e => {
+    let obj = {};
+    obj.poi_id = poi_id;
+    console.log(e)
+    obj.skade_type = e;
+    //console.log(obj.skade_type)
+    console.log(obj);
+    data.push(obj);
   });
+  console.log(data)
+
+  // let damages = req.body;
+  // let damagetoDB = {}
+  // damagetoDB.poi_id = damages.poi_id
+  // damagetoDB.skade_type = damages.skade_type
+  // console.log(damagetoDB);
+  //data = [{poi_id:50, skade_type:"dykkert"},{poi_id:50, skade_type:"skadet_kumrug"}];
+  queries.createSkade(data)
+    .then(skader => {
+      res.json(skader);
+      console.log(skader);
+      console.log(skader[0]);
+      console.log(skader[1]);
+      console.log('from then skader!')
+    })
+    .catch(function (err) {
+      console.error('get comment error ' + err);
+    });
 });
+
+
 
 router.get('/skade/:id', (req, res) => {
   queries.getSkade(req.params.id)
@@ -137,7 +167,7 @@ router.get('/:id', (req, res, next) => {
 //   }
 // });
 
-router.post('/', (req, res, next) => {
+router.post('/', (req, res) => {
   console.log(req.body.asset_type);
   const poi = {
     // place: req.body.place,
@@ -147,7 +177,12 @@ router.post('/', (req, res, next) => {
   };
   queries.create(poi)
     //.then(console.log('hepp'))
-  .then(res.redirect('/map'))
+  .then(poi => {
+    console.log(poi[0]);
+    res.json(poi[0]);
+  })
+    
+  //.then(res.redirect('/map'))
   //   res.json(poi[0]);
   //  })
   .catch(err => {

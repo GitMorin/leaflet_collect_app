@@ -12,14 +12,60 @@ var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/w
 	ext: 'png'
 });
 
+// ADDING SCALE
+L.control.scale({imperial:false}).addTo(map);
+
+// ADDING LEGEND
+var legend = L.control({position: 'bottomright'});
+
+// make this dynamic from getColor
+function getLegendColor(d) {
+  return d ==  'Sandfang' ? '#ff0000' :
+         d ==  'Bisluk' ? '#0000ff' :
+         d ==  'Strindasluk' ? '#ffff00' :
+                    '#FFEDA0';
+}
+
+
+legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+    grades = ['Sandfang', 'Bisluk', 'Strindasluk'],
+    labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getLegendColor(grades[i]) + '"></i> ' +
+            grades[i] + '<br>';
+}
+
+return div;
+};
+
+legend.addTo(map);
+
+
+
+
 let basemaps = L.layerGroup()
 .addLayer(OpenStreetMap_Mapnik) // default layer to show
 .addTo(map);
 
-$(".dropdown-item").click(function(event) {
+$(".dropdown-item.bg").click(function(event) {
   event.preventDefault();
-  let selectedLayer = ($(this).attr("value"));
-  console.log(selectedLayer);
+  let selectedLayer = ($(this).attr("value")); // return string
+
+  layer = $(this).data('foo', {OpenStreetMap_Mapnik: 'bar'});
+  obj = ($(this).data('foo'));
+  console.log(typeof(obj['bar']));
+  console.log($(this).data('foo'));
+  console.log(typeof(Object.keys(obj)[0]));
+
+  // var my_object = {};
+  // var prop = 'layer';
+  // my_object[prop] = selectedLayer;
+
   basemaps.clearLayers()
   basemaps.addLayer(selectedBaseLayer(selectedLayer));
 });
@@ -32,12 +78,12 @@ function selectedBaseLayer(layer) {
   };
 };
 
-// $("#basemap-water-colour").click(function(event) {
-//   event.preventDefault();
-//   basemaps.clearLayers()
-//   //$(this).addClass('selected');
-//   basemaps.addLayer(Stamen_Watercolor)
-// });
+// Holder for temporary position for new poi shown as red pin
+// before sending to database
+let tempMarker;
+// Id of latest clicked marker. Used when updating skade and tomming
+// can probably be refactored better
+let current_id;
 
 // Click edit button to hide list and show form
 $("#btnEditSandfangInfo").click(function (e) {
@@ -63,6 +109,7 @@ $('#hideEditSandfangSkadeForm').click(function (e) {
   $('#editSandfangSkade').hide();
 });
 
+// assign color to marker
 function getColor(asset) {
   switch (asset) {
     case 'sandfang':
@@ -70,13 +117,45 @@ function getColor(asset) {
     case 'bisluk':
       return "#0000ff";
     case 'strindasluk':
-      return "#00ff00"
-    default:
-      return '#ffff00';
+      return "#ffff00"
   }
 }
 
-var poi = new L.geoJson(null, {
+// CREATE LAYERS TO BE POPULATED
+var sandfang = new L.geoJson(null, {
+  pointToLayer: function (feature, latlng) {
+    return L.circleMarker(latlng, {
+      radius: 10,
+      fillOpacity: 0.5,
+      color: getColor(feature.properties.asset_type)
+    });
+  },
+  onEachFeature: function (feature, layer) {
+    //layer.bindPopup(feature.properties.place);
+    layer.bindTooltip(feature.properties.id + '', {
+      sticky: true,
+      direction: 'top'
+    });
+    //layer.on('click', onClick);
+  }
+});
+var bisluk = new L.geoJson(null, {
+  pointToLayer: function (feature, latlng) {
+    return L.circleMarker(latlng, {
+      radius: 10,
+      fillOpacity: 0.5,
+      color: getColor(feature.properties.asset_type)
+    });
+  },
+  onEachFeature: function (feature, layer) {
+    //layer.bindPopup(feature.properties.place);
+    layer.bindTooltip(feature.properties.id + '', {
+      sticky: true,
+      direction: 'top'
+    });
+  }
+});
+var strindasluk = new L.geoJson(null, {
   pointToLayer: function (feature, latlng) {
     return L.circleMarker(latlng, {
       radius: 10,
@@ -93,6 +172,16 @@ var poi = new L.geoJson(null, {
   }
 });
 
+sandfang.on('click', markerOnClick);
+bisluk.on('click', markerOnClick);
+strindasluk.on('click', markerOnClick);
+
+function markerOnClick(e) {
+  current_id = e.layer.feature.properties.id;
+  console.log(current_id)
+  showInfo(current_id, e.layer.feature);
+}
+
 var tempIcon = L.icon({
   iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
   //iconUrl: 'https://png.pngtree.com/element_pic/17/04/18/c631b7cf64373bdb37049a3bb250dd9a.jpg',
@@ -104,14 +193,14 @@ var tempIcon = L.icon({
   shadowSize: [41, 41]
 });
 
-let tempMarker;
-let current_id;
 
 // get feature of layer to be used to fill modal!
-poi.on('click', function (e) {
+// THIS WORKS but should probably be refactored...
+function showInfo(current_id, layer) {
+  console.log(layer)
   // Make ajax call to populate lists
 
-  current_id = e.layer.feature.properties.id;
+  //current_id = e.layer.feature.properties.id;
 
   // get tomming
   let url = '/api/pois/tomming/' + current_id;
@@ -177,15 +266,15 @@ poi.on('click', function (e) {
   $(".featureId").text('');
   $(".featurePlace").text('');
   $(".featureRegdate").text('');
-  $(".featureType").append(e.layer.feature.properties.asset_type);
+  $(".featureType").append(layer.properties.asset_type);
 
   $(".featureId").append(current_id);
-  $(".featurePlace").append(e.layer.feature.properties.place);
-  let regdato = new Date(e.layer.feature.properties.regdate);
+  $(".featurePlace").append(layer.properties.place);
+  let regdato = new Date(layer.properties.regdate);
   $(".featureRegdate").append(regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear());
   $("#infoModal").modal();
-  objectType = e.layer.feature.properties.asset_type;
-});
+  objectType = layer.properties.asset_type;
+};
 
 function renameSkade(skade) {
   switch (skade) {
@@ -209,18 +298,18 @@ function renameFylling(fylling) {
   };
 };
 
-// hide element with value of val
+// Remove selectable values from damages that has already been registered
 function hideRegisteredSkade(val) {
   // return element that has value
-  // need to be specofic to which checkboxes
+  // need to be specific to which checkboxes
   $('input[type="checkbox"]').filter(function() {
       return this.value == val;
   }).next().hide();
-  console.log(val);
-  //.hide();
+  //console.log(val);
 }
 
-//attach submit listenet to the edit-skader-form
+//attach submit listener to the edit-skader-form
+// make user verify he/she want mark a damage as repaired
 $('#registrert-skader-list').on('submit', '.edit-skader-form', function(e) {
   e.preventDefault();
   let confirmResponse = confirm('Er du sikker att du har repapert skaden?');
@@ -242,126 +331,109 @@ $('#registrert-skader-list').on('submit', '.edit-skader-form', function(e) {
   }
 });
 
-poi.addTo(map);
-
 // add all pois
-$.get({
-    //dataType: 'json',
-    url: '/api/pois/'
-  })
+$.get({ url: '/api/pois/'})
   .done(function (data) {
-    $(data.features).each(function (key, data) {
-      poi.addData(data);
-    });
+    getAssets(data);
+    sandfang.addTo(map);
   })
   .fail(function (jqXHR, status, error) {
     console.log('Status: ' + status + '\n' + 'Error: ' + error);
   });
 
 
-// WORKING!!
 // save new object based on object type
 $('#newPoiForm').submit(function (e) { // handle the submit event
   e.preventDefault();
   let formData = $(this).serialize();
-  console.log(formData);
+  // post new asset and add the latest point on the map
 
-  $.post({
-      type: 'POST',
-      url: '/api/pois/',
-      data: formData
-    })
-    .done(function (data) {
-      // $("#newPoiForm").trigger("reset");
-      map.removeLayer(crosshair);
-      console.log('submitted');
+  $.post({type: 'POST', url: '/api/pois/', data: formData}).then(function(data){
+    console.log('New asset submitted');
+    return $.get({url: '/api/pois/last'});
+  }).then(function(data, textStatus, xhr) {
+    console.log(data);
 
-    })
-    .fail(function (xhr) {
-      console.log('something went wrong', xhr);
-      //console.log(data);
-    })
-    .then(function (data) {
-      $.get({
-          url: '/api/pois/last'
-        })
-        .done(function (data, jqxhr) {
-          $(data.features).each(function (key, data) {
-            // add last to poi
-            console.log(status);
-            console.log(jqxhr);
-            console.log('last point added, hurrah!');
-            poi.addData(data);
-          })
-        })
-        .fail(function (xhr) {
-          console.log('error callback add last point', xhr);
-        });
-    });
-});
+    if (xhr.status === 200) {
+      console.log(`Status code ${xhr.status}`);
+      getAssets(data)
+    } else {
+      alert(`Noe gikk feil, status code: ${xhr.status}`);
+    }
+  })
+})
 
+// add markers to map filtered on asset type
+function getAssets(data){
+  $(data.features).each(function (key, data) {
+    switch (data.properties.asset_type) {
+      case 'bisluk': bisluk.addData(data); break; 
+      case 'sandfang': sandfang.addData(data); break;
+      case 'strindasluk': strindasluk.addData(data); break;
+      default: console.log('wrong asset type ' + data.properties.asset_type);
+    };
+  })
+}
+
+// submitting new damage
 $('#registrerSkadeForm').submit(function (e) {
   e.preventDefault();
 
-  //let formData = $(this).serializeArray();
-  let selectedIds = $("input:checkbox:checked").map(function () {
+ // let = selectedDamage $("input:checkbox[name=type]:checked").map(function(){return $(this).val()}).get()
+  let = selectedDamage = $("input:checkbox[name=skade_type]:checked").map(function () {
+    console.log('selected damage to post ' + $(this).val());
     return $(this).val();
   }).get();
-  console.log(selectedIds);
 
-  selectedIds.forEach(function (selected) {
+  let object = {}
+  object.poi_id = current_id;
+  object.skade_type = selectedDamage;
+  console.log(object);
+  skaderJSON = JSON.stringify(object);
+  postDamage(skaderJSON);
+});
 
-    // create empty object
-    let sendObject = {};
 
-    // add to that object
-    sendObject["skade_type"] = selected;
-    sendObject["poi_id"] = current_id;
-
-    console.log(sendObject);
-  
-    $.post({
-      type: 'POST',
+function postDamage(damage) {
+  console.log(damage);
+  $.ajax({
+      type: "POST",
       url: '/api/pois/skade',
-      data: sendObject
-    }).
-    done(function (skade) {
+      data: damage,
+      contentType: "application/json; charset=utf-8",
+    }).done(function (skade) {
+    console.log(skade);
+    console.log('ajax is done getting back data aka, success');
+    skade.forEach(function(e) {
       let items = [];
+      console.log(e.skade_type);
       // add form to the new item, make sure the submit listener also work on these new elements!
       items.push(
         `
         <li class="list-group-item list-group-item-action">
           <span>
-          ${renameSkade(skade[0].skade_type)}
+          ${renameSkade(e.skade_type)}
           </span> 
-          <form action="api/pois/skade/${skade[0].skader_id}/edit" class="edit-skader-form">
-              <input type="hidden" value="${skade[0].skade_type}" name="skade_type">
-              <input type="hidden" value="${skade[0].skader_id}" name="skader_id">
+          <form action="api/pois/skade/${e.skader_id}/edit" class="edit-skader-form">
+              <input type="hidden" value="${e.skade_type}" name="skade_type">
+              <input type="hidden" value="${e.skader_id}" name="skader_id">
               <input type="hidden" value="true" name="reparert">          
               <button type="submit" class="btn btn-danger btn-sm float-right">Fjern skade</button> 
           </form>   
         </li>
         `
-
-        // `
-        // <li class="list-group-item list-group-item-action">${renameSkade(skade[0].skade_type)}
-        // <button type="submit" class="btn btn-danger btn-sm float-right">Fjern Skade</button></li>
-        // `
         )
-      hideRegisteredSkade(skade[0].skade_type);
-
+      hideRegisteredSkade(e.skade_type);
       $('.list-group.skadeLog').append(( items.join('') ));
-    });
-
-    // this might all be able to go inside the then or done state
-    // clear skade form
-    $('#registrerSkadeForm').trigger("reset");
-    // hide reg skade form
-    $('#editSandfangSkade').hide();
-    $('#sandfangSkadeInfo').show();
-  });
-
-});
+    })
+  }
+);
+  // clear skade form
+  $('#registrerSkadeForm').trigger("reset");
+  // hide reg skade form
+  $('#editSandfangSkade').hide();
+  $('#sandfangSkadeInfo').show();
+ }
 
 $('#registrerTommingForm').submit(function (e) {
   e.preventDefault();
@@ -385,7 +457,6 @@ $('#registrerTommingForm').submit(function (e) {
       // reset formData
       $('#registrerTommingForm').trigger("reset");
       // add new tomming to list
-
       // find how many rows table has
       let rows = $('#sandfangLogTable tr').length;
       //$('#myTable tr').size()
@@ -434,9 +505,6 @@ $('#infoModal').on('hidden.bs.modal', function () {
 $('#lagreObject').click(function () {
   $('#confirm-object').modal('hide');
   $('#newPoiForm').submit(); // trigger the submit event
-  console.log("clicked");
-  // remove poi
-
 })
 
 // remove tempMarker when selectObject modal close
@@ -454,11 +522,6 @@ let getCoortdinatesButton = L.easyButton('fa-crosshairs fa-lg', function (btn, m
   let lat = map.getCenter().lat;
   let long = map.getCenter().lng;
 
-  // if (tempMarker != undefined) {
-  //         map.removeLayer(tempMarker);
-  //   };
-
-  // add the temp marker
   tempMarker = L.marker([lat, long], {
     icon: tempIcon
   }).addTo(map);
@@ -497,4 +560,63 @@ crosshair = new L.marker(map.getCenter(), {
 // Move the crosshair to the center of the map when the user pans
 map.on('move', function (e) {
   crosshair.setLatLng(map.getCenter());
+});
+
+function checkedFilter() {
+  var filterItem = [];
+  $('input[name=filterItem]:checked').map(function() {
+    filterItem.push($(this).val());
+  });
+  console.log(filterItem)
+}
+
+// Interact with checkboxes
+$('#sandfang-checkbox').change(function() {
+  if (this.checked) {
+    map.addLayer(sandfang);
+  } else {
+    map.removeLayer(sandfang);
+  }
+});
+$('#bisluk-checkbox').change(function() {
+  if (this.checked) {
+    console.log('add bisluk');
+    map.addLayer(bisluk);
+  } else {
+    map.removeLayer(bisluk);
+    console.log('remove bisluk');
+  }
+});
+$('#strindasluk-checkbox').change(function() {
+  if (this.checked) {
+    console.log('add strindasluk');
+    map.addLayer(strindasluk);
+  } else { 
+    map.removeLayer(strindasluk);
+    console.log('remove strindasluk');
+  }
+});
+$('#allatyper-checkbox').change(function() {
+  if (this.checked) {
+    map.addLayer(sandfang);
+    map.addLayer(bisluk);
+    map.addLayer(strindasluk);
+  } else {
+    map.removeLayer(sandfang);
+    map.removeLayer(bisluk);
+    map.removeLayer(strindasluk);
+  }
+});
+
+$('#allatyper-checkbox').on('click', function() {
+  if (this.checked == true)
+      $('.asset-checkbox').find('input[name="filtercheckbox"]').prop( "checked", true );
+      //$('input[name="filtercheckbox"]').prop( "checked", true );
+  else
+      $('.asset-checkbox').find('input[name="filtercheckbox"]').prop('checked', false);
+      //$('input[name="filtercheckbox"]').prop( "checked", false );
+});
+
+$('#myDropdown').on('click', function(event) {
+  event.stopPropagation();
 });

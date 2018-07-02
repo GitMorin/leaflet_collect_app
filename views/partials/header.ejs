@@ -15,20 +15,48 @@
       <li class="nav-item">
         <a class="nav-link" href="#" data-toggle="modal" data-target="#selectObjectModal">Nytt Objekt</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/new">Nytt Objekt form</a>
-      </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBakgrunnskart" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Bakgrunnskart
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#" id="basemap-osm" value="OpenStreetMap_Mapnik">OSM</a>
+          <a class="dropdown-item bg" href="#" id="basemap-osm" value="OpenStreetMap_Mapnik">OSM</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" id="basemap-water-colour" value="Stamen_Watercolor">Water colour</a>
+          <a class="dropdown-item bg" href="#" id="basemap-water-colour" value="Stamen_Watercolor">Water colour</a>
           <div class="dropdown-divider"></div>
         </div>
       </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownFilter" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Filter
+        </a>
+        <ul role="menu" class="dropdown-menu" id="myDropdown">
+        <!-- Change class name -->
+          <li>
+            <label class="asset-checkbox">
+              <input id="sandfang-checkbox" type="checkbox" name="filtercheckbox" checked="checked"/>
+              <span class="label-text">Sandfang</label>
+            </label>
+          </li>
+          <li>
+            <label class="asset-checkbox">
+              <input id="bisluk-checkbox" type="checkbox" name="filtercheckbox"/>
+              <span class="label-text">Bisluk</label>
+            </label>
+          </li>
+          <li>
+            <label class="asset-checkbox">
+              <input id="strindasluk-checkbox"type="checkbox" name="filtercheckbox"/>
+              <span class="label-text">Strindasluk</label>
+            </label>
+          </li>
+          <li>
+            <label class="asset-checkbox">
+              <input id="allatyper-checkbox"type="checkbox" name="filtercheckbox"/>
+              <span class="label-text">Alla typer</label>
+            </label>
+          </li>
+        </ul> 
     </ul>
     <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="text" placeholder="Search">
@@ -51,17 +79,14 @@
           <div>
             <form id="newPoiForm">
               <div id="asset_type" class="btn" data-toggle="buttons">
-                <label class="btn btn-warning btn-rounded col-4">
+                <label class="btn btn-sandfang btn-rounded col-4">
                   <input type="radio" autocomplete="off" name="asset_type" value="sandfang"> Sandfang
-                  <i class="fa fa-diamond ml-2"></i>
                 </label>
-                <label class="btn btn-danger btn-rounded col-4">
+                <label class="btn btn-bisluk btn-rounded col-4">
                   <input type="radio" autocomplete="off" name="asset_type" value="bisluk"> Bisluk
-                  <i class="fa fa-user ml-2"></i>
                 </label>
-                <label class="btn btn-info btn-rounded col-4">
+                <label class="btn btn-strindasluk btn-rounded col-4">
                   <input type="radio" autocomplete="off" name="asset_type" value="strindasluk"> Strindasluk
-                  <i class="fa fa-code ml-2"></i>
                 </label>
                 <!-- need value field!?? -->
                 <input type="hidden" class="form-control" id="x-coord" placeholder="X - Coord" name="xCoord">
@@ -76,7 +101,7 @@
         <!-- <span class="input-group-btn"> -->
         <div class="text-center">
           <button id="formPinButton" class="btn btn-default" type="button">
-            <span class="fa fa-map-marker fa-5x" data-dismiss="modal" aria-hidden="true">
+            <span class="fas fa-map-marker-alt fa-5x" data-dismiss="modal" aria-hidden="true">
           </button>
         </div>
         <!-- </span> -->
@@ -174,11 +199,11 @@
                 </li>
 
                 <li class="list-group-item list-group-item-light">
-                  <input type="checkbox" id="harBisluk" class="">
+                  <input type="checkbox" id="harBisluk" class="checkbox-modal">
                   <label for="harBisluk">Har Bisluk</label>
                 </li>
                 <li class="list-group-item list-group-item-light">
-                  <input type="checkbox" id="sandfangFjernet" class="">
+                  <input type="checkbox" id="sandfangFjernet" class="checkbox-modal">
                   <label for="sandfangFjernet">Fjernet</label>
                 </li>
 
@@ -247,28 +272,28 @@
                     </li>
 
                     <li class="list-group-item list-group-item-light">
-                      <input type="checkbox" name="skade_type[]" id="feilLokk" value="feil_lokk" class="myCheckbox">
-                      <label for="feilLokk">Feil lokk</label>
+                      <input type="checkbox" name="skade_type" id="feilLokk" value="feil_lokk" class="checkbox-modal">
+                      <label for="feilLokk" class="modal-label">Feil lokk</label>
                     </li>
                     <li class="list-group-item list-group-item-light">
-                      <input type="checkbox" name="skade_type[]" id="skadetLokk" value="skadet_lokk" class="myCheckbox">
-                      <label for="skadetLokk">Skadet lokk</label>
+                      <input type="checkbox" name="skade_type" id="skadetLokk" value="skadet_lokk" class="checkbox-modal">
+                      <label for="skadetLokk" class="modal-label">Skadet lokk</label>
                     </li>
                     <li class="list-group-item list-group-item-light">
-                      <input type="checkbox" name="skade_type[]" id="manglendeDykkert" value="manglendeDykkert" class="myCheckbox">
-                      <label for="manglendeDykkert">Manglende dykkert</label>
+                      <input type="checkbox" name="skade_type" id="manglendeDykkert" value="manglendeDykkert" class="checkbox-modal">
+                      <label for="manglendeDykkert" class="modal-label">Manglende dykkert</label>
                     </li>
                     <li class="list-group-item list-group-item-light">
-                      <input type="checkbox" name="skade_type[]" id="tettStikkledning" value="tett_stikkledning" class="myCheckbox">
-                      <label for="tettStikkledning">Tett stikkledning</label>
+                      <input type="checkbox" name="skade_type" id="tettStikkledning" value="tett_stikkledning" class="checkbox-modal">
+                      <label for="tettStikkledning" class="modal-label">Tett stikkledning</label>
                     </li>
                     <li class="list-group-item list-group-item-light">
-                      <input type="checkbox" name="skade_type[]" id="tettUtlop" value="tett_utlopp" class="myCheckbox">
-                      <label for="tettUtlop">Tett utløp</label>
+                      <input type="checkbox" name="skade_type" id="tettUtlop" value="tett_utlopp" class="checkbox-modal">
+                      <label for="tettUtlop" class="modal-label">Tett utløp</label>
                     </li>
                     <li class="list-group-item list-group-item-light">
-                      <input type="checkbox" name="skade_type[]" id="skadetKumrug" value="skadet_kumrug" class="myCheckbox">
-                      <label for="skadetKumrug">Skadet kumrung</label>
+                      <input type="checkbox" name="skade_type" id="skadetKumrug" value="skadet_kumrug" class="checkbox-modal">
+                      <label for="skadetKumrug" class="modal-label">Skadet kumrung</label>
                     </li>
                   </ul>
                   <div id="btn-group-sandfang">

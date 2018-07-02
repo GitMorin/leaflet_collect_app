@@ -14,12 +14,12 @@ html, body, #map{
 display: none;
 }
 
-span.fa.fa-map-marker{
-color: red;
+.fa-map-marker-alt{
+color: rgb(223, 24, 24);
 }
 
 .crosshairIcon {
-color: red;
+color: #ff0000;
 }
 
 span.objectToCreate {
@@ -133,6 +133,17 @@ ul.list-group.list-group-sm li {
 padding: 0.3rem 1.25rem;
 }
 
+
+
+/* div[data-toggle="buttons"] label:hover {
+color: #7AA3CC;
+}
+
+div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active {
+-webkit-box-shadow: none;
+box-shadow: none;
+} */
+
 /* Checkboxes in modal */
 
 /* style the checkbox labels */
@@ -183,3 +194,142 @@ text-align: center;
 margin-top: 15px;
 }
 
+/* CHECKBOXES IN NAV */
+
+label input[type="checkbox"] {
+  display: none;
+}
+
+/* select the followeing element after checkbox that is a span. */ 
+label input[type="checkbox"] + span::before {
+  content: "";
+  border: 2px solid #7e8a94;
+  float: left;
+  height: 20px;
+  width: 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Checked checkbox */
+label input[type="checkbox"]:checked + span:before {
+  content: "\2713";
+}
+
+/* change text color when hover - only when not checked*/
+label:hover input[type="checkbox"] + span {
+color: #7AA3CC;
+}
+
+/* change background color for checked element - Does not work :(  */
+label input[type="checkbox"]:checked {
+background-color: #f5c6cb;
+}
+
+label.asset-checkbox {
+  padding-left: 3px;
+}
+
+label span.label-text {
+  padding-left: 3px;
+}
+
+/* Custom button colors for bootstrap 4 */
+.btn-sandfang {
+  color: #fff;
+  background-color: #FE7F9C;
+  border-color: #da2f70;
+}
+
+.btn-sandfang:hover {
+  color: #fff;
+  background-color: #da1919;
+  border-color: #ff0000;
+}
+
+.btn-sandfang:active, .btn-sandfang.active,
+.show > .btn-sandfang.dropdown-toggle {
+  background-color: #ff0000;
+  background-image: none;
+  border-color: hsl(0, 0%, 0%);
+  border-width: 2px;
+}
+
+
+.btn-bisluk {
+  color: #fff;
+  background-color: #1c86f7;
+  border-color: #007bff;
+}
+
+.btn-bisluk:hover {
+  color: #fff;
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+.btn-bisluk:active, .btn-bisluk.active,
+.show > .btn-primary.dropdown-toggle {
+  background-color: #1d08d8;
+  background-image: none;
+  border-color: #000000;
+  border-width: 2px;
+}
+
+.btn-strindasluk {
+  color: #fff;
+  background-color: #f7f767;
+  border-color: #fdfd54;
+}
+
+.btn-strindasluk:hover {
+  color: rgb(83, 79, 79);
+  background-color: #f5f531;
+  border-color: #ffff00;
+}
+
+.btn-strindasluk:focus, .btn-strindasluk.focus {
+  color: black;
+  background-color: black;
+}
+
+.btn-strindasluk:active, .btn-strindasluk.active,
+.show > .btn-strindasluk.dropdown-toggle {
+  color: black;
+  background-color: #ffff00;
+  background-image: none;
+  border-color: hsl(0, 0%, 0%);
+  border-width: 2px;
+}
+
+/* Center buttons in div */
+#asset_type {
+ width: 100%;
+ margin: 0px;
+}
+
+/* Legend styling */
+.info {
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.legend {
+  line-height: 18px;
+  color: #555;
+}
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+  border-radius: 9px;
+}

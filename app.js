@@ -27,20 +27,20 @@ app.use('/api/pois', pois);
 app.use('/', map);
 
 // catch 404 and forward error to handler
-app.use(function(req, res, next) {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// app.use(function(req, res, next) {
+//   const err = new Error('Not Found');
+//   err.status = 404;
+//   next(err);
+// });
 
 // error handler
-app.use(function(err, req, res, next) {
-  res.status(err.status||500);
-  res.json({
-    message: err.message,
-    error: req.app.get('env') === 'development' ? err : {}
-  });
-});
+// app.use(function(err, req, res, next) {
+//   res.status(err.status||500);
+//   res.json({
+//     message: err.message,
+//     error: req.app.get('env') === 'development' ? err : {}
+//   });
+// });
 
 // Start Server
 app.listen(3005, function(){
