@@ -93,8 +93,8 @@ $("#btnEditSandfangInfo").click(function (e) {
 
 // If avbrut if clicked go back to info list
 $('#hideEditSandfangInfoForm').click(function (e) {
-  $('#sandfangInfo').show();
   $('#editSandfangInfo').hide();
+  $('#sandfangInfo').show();
 })
 
 // Click edit button to hide list and show form
@@ -178,9 +178,12 @@ strindasluk.on('click', markerOnClick);
 
 function markerOnClick(e) {
   current_id = e.layer.feature.properties.id;
-  console.log(current_id)
+  console.log('clicked feature')
+  //merkned = e.layer.feature.properties.merkned;
+  //kritisk_merkned = e.layer.feature.properties.kritisk_merkned;
+  //console.log(current_id,kritisk_merkned,merkned)
   showInfo(current_id, e.layer.feature);
-}
+};
 
 var tempIcon = L.icon({
   iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -234,7 +237,6 @@ function showInfo(current_id, layer) {
     })
     .done(function (data) {
       // add skade to list
-      console.log(data);
       data.forEach(function (skade) {
         let skaderid = skade.skader_id;
         let rename = renameSkade(skade.skade_type);
@@ -261,14 +263,26 @@ function showInfo(current_id, layer) {
       console.log('Status: ' + status + '\n' + 'Error: ' + error);
     });
 
-  $(".featureType").text('');
-  $(".featureId").text('');
-  //$(".featurePlace").text('');
-  $(".featureRegdate").text('');
-  $(".featureType").append(layer.properties.asset_type);
+  // populated infoForm
+  //console.log(layer.properties.merkned)
+  
+  // NEED TO GET NEW DATA FROM DATABASE!
+  let getOneUrl = '/api/pois/' + current_id;
+  $.get({
+    url: getOneUrl
+  })
+  .done(function(data){
+    console.log(current_id);
+    console.log('appending ' + data.merkned);
+    $(".featureType").val(data.asset_type);
+    $(".featureId").append(current_id);
+    $("#exampleFormControlTextarea1").val(data.merkned);
+    if (data.kritisk_merkned == true) {
+      console.log('setting checkbox to cheked')
+        $('#exampleCheck1').prop('checked', 1);
+    }
+  });
 
-  $(".featureId").append(current_id);
-  $(".featurePlace").append(layer.properties.place);
   let regdato = new Date(layer.properties.regdate);
   $(".featureRegdate").append(regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear());
   $("#infoModal").modal();
@@ -412,7 +426,7 @@ function postDamage(damage) {
         <li class="list-group-item list-group-item-action">
           <span>
           ${renameSkade(e.skade_type)}
-          </span> 
+          </span>
           <form action="api/pois/skade/${e.skader_id}/edit" class="edit-skader-form">
               <input type="hidden" value="${e.skade_type}" name="skade_type">
               <input type="hidden" value="${e.skader_id}" name="skader_id">
@@ -434,6 +448,40 @@ function postDamage(damage) {
   $('#sandfangSkadeInfo').show();
  }
 
+ // Update poi info
+$('#infoForm').submit(function(e) {
+  e.preventDefault();
+  let formData = $(this).serializeArray();
+  let url = '/api/pois/' + current_id;
+  console.log(url);
+  console.log(formData);
+  if ( $('#exampleCheck1').is(':checked') ) {
+   // do nothing
+  } else {
+    formData.push({name: "kritisk_merkned", value: "false"})
+    console.log('added false checked');
+};
+
+  $.ajax({
+    type: 'PUT',
+    url: url,
+    data: formData
+  }).done(function(data){
+    console.log(data.merkned);
+  //  $('#infoForm').trigger("reset");
+    $("#exampleFormControlTextarea1").val(data.merkned);
+    if (data.kritisk_merkned == true) {
+      console.log('setting checkbox to cheked')
+        $('#exampleCheck1').prop('checked', 1);
+      }  else $('#exampleCheck1').prop('checked', 0);
+    $('#sandfangInfo').show();
+    $('#editSandfangInfo').hide();
+    // show regular pane with new info
+    // clear form on close modal
+    console.log('data sent to server ' + data)
+  });
+});
+
 $('#registrerTommingForm').submit(function (e) {
   e.preventDefault();
   let formData = $(this).serializeArray();
@@ -442,8 +490,6 @@ $('#registrerTommingForm').submit(function (e) {
     value: current_id
   });
   console.log(formData);
-  // does not work, need to append the id that was clicked somehow!?
-  //console.log(e.layer.feature.properties.id);
   let fyllingsgrad = formData[0].value;
   console.log(fyllingsgrad);
 
@@ -480,10 +526,12 @@ $('#registrerTommingForm').submit(function (e) {
 
 // when infoModal close do actions
 $('#infoModal').on('hidden.bs.modal', function () {
+  console.log('clicked outside modal');
   // Make first tab active in modal
   $('#sandfangLogTable > tbody > tr:nth-child(n+1)').remove(); // clear Tømming log table
   $('a.nav-item').removeClass('active');
   $('a.nav-item:first').addClass('active');
+
 
   // Clear Skade table
   $('.list-group.skadeLog > li:nth-child(n+2)').remove();
@@ -495,9 +543,14 @@ $('#infoModal').on('hidden.bs.modal', function () {
   // reset to show all checkboxes when modal close
   $('#registrerSkadeForm label').show();
 
+  $(".featureType").text('');
+  $(".featureId").text('');
+  $(".featureRegdate").text('');
+
   // Make sure skade info is shown after the modal is closed
-  $('#editSandfangSkade').hide();
-  $('#sandfangSkadeInfo').show();
+  $('#sandfangInfo').show();
+  $('#editSandfangInfo').hide();
+  $('#exampleCheck1').prop('checked', 0);
 });
 
 // click lagre object

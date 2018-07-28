@@ -92,10 +92,7 @@ router.get('/:id', (req, res, next) => {
         console.log(poi);
         res.json(poi);
       } else {
-        // this is not necessary because we have the middlwear already
-        //res.status(404);
-        //next(new Error('Not found'));
-        next();
+        alert('something went wrong')
       }
     })
     .catch(err => {
@@ -123,18 +120,14 @@ router.post('/', (req, res) => {
 });
 
 // update pois
-router.put('/:id', isValidId, (req, res) => {
-  if (validPoi(req.body)) {
-    queries.update(req.params.id, req.body)
+router.put('/:id', (req, res) => {
+  queries.update(req.params.id, req.body)
     .then(pois => {
       res.json(pois[0]);
     })
     .catch(err => {
       console.error('Update POI error', err);
     });
-  } else {
-    next(new Error('Invalid poi'));
-  }
 });
 
 // update skader
