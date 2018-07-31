@@ -213,31 +213,16 @@ function showInfo(current_id, layer) {
       url: url
     })
     .done(function (data) {
-
+      // set last tomming in modal
       let lastTomming = new Date(Math.max.apply(null, data.map(function(e) {
-        if (isValidDate(lastTomming)) {
-          let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
-        $('.last-tomming').text(lastTommingFormatted);
-        } else {
-          $('.last-tomming').text("Ukjent");
-        }
-        //return new Date(e.regdato);
+        return new Date(e.regdato);
       })));
-
-      // let lastTomming = new Date(Math.max.apply(null, data.map(function(e) {
-      //   return new Date(e.regdato);
-      // })));
-      // if (isValidDate(lastTomming)) {
-      //   let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
-      // $('.last-tomming').text(lastTommingFormatted);
-      // } else {
-      //   $('.last-tomming').text("Ukjent");
-      // }
-
-      //if(lastTomming) {alert('has value')}
-      console.log(lastTomming);
-      // let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
-      // $('.last-tomming').text(lastTommingFormatted);
+      if (isValidDate(lastTomming)) {
+        let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
+      $('.last-tomming').text(lastTommingFormatted);
+      } else {
+        $('.last-tomming').text("Ukjent");
+      }
 
       let i = 0;
       var dager = ["Søndag", "Mondag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
