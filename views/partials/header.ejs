@@ -150,7 +150,8 @@
   <!-- Modal content start -->
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Objekt info</h5>
+        <!-- Title dynamically filled -->
+        <h5 class="modal-title object-info"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -171,22 +172,27 @@
           <div class="tab-pane active" id="sandfang">
             <div id="sandfangInfo">
               <ul id="sandfangInfoList">
-                <li class="sandfangLi text-center featureType font-weight-bold"></li>
                 <li class="sandfangLi">
                   <span class="text-left">Id: </span>
                   <span class="text-right featureId"></span>
                 </li>
                 <li class="sandfangLi">
                   <span class="text-left">Siste Tømmedato: </span>
-                  <span class="text-right">Dato Her</span>
+                  <span class="text-right last-tomming">Dato Her</span>
                 </li>
                 <li class="sandfangLi">
-                  <span class="text-left">Reg Dato: </span>
-                  <span class="text-right featureRegdate"></span>
+                  <span class="text-left">Kritisk merknad</span>
+                  <span class="text-right kritiskBool"></span>
+                </li>
+                </li>
+                  <div>
+                    <!-- <label for="exampleFormControlTextarea2">Example textarea</label> -->
+                    <textarea disabled placeholder="Ingen merknad registrert" class="form-control" id="infoMerknedTextArea" rows="2"></textarea>
+                  </div>
                 </li>
               </ul>
               <div class="center-btn">
-                <button type="button" id="btnEditSandfangInfo" class="btn btn-primary">Editere</button>
+                <button type="button" id="btnEditSandfangInfo" class="btn btn-primary">Editere merknad</button>
               </div>
             </div>
 
@@ -194,12 +200,12 @@
             <div id="editSandfangInfo">
               <form id=infoForm>
                 <div class="form-group">
-                  <label for="exampleFormControlTextarea1">Example text area</label>
-                  <textarea class="form-control" id="exampleFormControlTextarea1" name="merkned" rows="3" placeholder="Skriv en merknad"></textarea>
+                  <label for="editMerknedTextArea">Example text area</label>
+                  <textarea class="form-control" id="editMerknedTextArea" name="merkned" rows="3" placeholder="Skriv en merknad"></textarea>
                 </div>  
                 <div class="form-group-check">
-                  <input type="checkbox" class="" id="exampleCheck1" name="kritisk_merkned">
-                  <label class="form-check-label" for="exampleCheck1">Kritisk Merkned</label>
+                  <input type="checkbox" id="checkKritisk" name="kritisk_merkned">
+                  <label class="form-check-label" for="checkKritisk">Kritisk Merkned</label>
                 </div>
                 <div id="btn-group-sandfang">
                   <button type="submit" class="btn btn-success">Lagre</button>

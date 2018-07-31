@@ -196,6 +196,9 @@ var tempIcon = L.icon({
   shadowSize: [41, 41]
 });
 
+function isValidDate(d) {
+  return d instanceof Date && !isNaN(d);
+}
 
 // get feature of layer to be used to fill modal!
 // THIS WORKS but should probably be refactored...
@@ -210,6 +213,32 @@ function showInfo(current_id, layer) {
       url: url
     })
     .done(function (data) {
+
+      let lastTomming = new Date(Math.max.apply(null, data.map(function(e) {
+        if (isValidDate(lastTomming)) {
+          let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
+        $('.last-tomming').text(lastTommingFormatted);
+        } else {
+          $('.last-tomming').text("Ukjent");
+        }
+        //return new Date(e.regdato);
+      })));
+
+      // let lastTomming = new Date(Math.max.apply(null, data.map(function(e) {
+      //   return new Date(e.regdato);
+      // })));
+      // if (isValidDate(lastTomming)) {
+      //   let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
+      // $('.last-tomming').text(lastTommingFormatted);
+      // } else {
+      //   $('.last-tomming').text("Ukjent");
+      // }
+
+      //if(lastTomming) {alert('has value')}
+      console.log(lastTomming);
+      // let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
+      // $('.last-tomming').text(lastTommingFormatted);
+
       let i = 0;
       var dager = ["Søndag", "Mondag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
       data.forEach(function (tomming) {
@@ -274,13 +303,20 @@ function showInfo(current_id, layer) {
   .done(function(data){
     console.log(current_id);
     console.log('appending ' + data.merkned);
-    $(".featureType").val(data.asset_type);
+    $(".featureType").append(data.asset_type);
     $(".featureId").append(current_id);
-    $("#exampleFormControlTextarea1").val(data.merkned);
+    $(".object-info").text(data.asset_type);
+    $('#infoMerknedTextArea').val(data.merkned);
+    $("#editMerknedTextArea").val(data.merkned);
     if (data.kritisk_merkned == true) {
+      $('span.text-right.kritiskBool').css('color','red');
       console.log('setting checkbox to cheked')
-        $('#exampleCheck1').prop('checked', 1);
-    }
+        $('#checkKritisk').prop('checked', 1);
+        $('.kritiskBool').text('Ja');
+    } else {
+      $('.kritiskBool').text('Nei')
+      $('span.text-right.kritiskBool').css('color','black');};
+      $('#checkKritisk').prop('checked', 0);
   });
 
   let regdato = new Date(layer.properties.regdate);
@@ -455,7 +491,7 @@ $('#infoForm').submit(function(e) {
   let url = '/api/pois/' + current_id;
   console.log(url);
   console.log(formData);
-  if ( $('#exampleCheck1').is(':checked') ) {
+  if ( $('#checkKritisk').is(':checked') ) {
    // do nothing
   } else {
     formData.push({name: "kritisk_merkned", value: "false"})
@@ -469,11 +505,21 @@ $('#infoForm').submit(function(e) {
   }).done(function(data){
     console.log(data.merkned);
   //  $('#infoForm').trigger("reset");
-    $("#exampleFormControlTextarea1").val(data.merkned);
+    $("#infoMerknedTextArea").val(data.merkned);
     if (data.kritisk_merkned == true) {
+      //set info Kritisk merked ja/nei
       console.log('setting checkbox to cheked')
-        $('#exampleCheck1').prop('checked', 1);
-      }  else $('#exampleCheck1').prop('checked', 0);
+        $('.kritiskBool').text('Ja').css('.text-danger');
+        $('span.text-right.kritiskBool').css('color','red');
+      }  else {
+        $('.kritiskBool').text('Nei')
+        $('span.text-right.kritiskBool').css('color','black')};
+    
+      // set edit form check kritisk merkned t/f
+    if (data.kritisk_merkned == true) {
+        $('#checkKritisk').prop('checked', 1);
+      }  else $('#checkKritisk').prop('checked', 0);  
+
     $('#sandfangInfo').show();
     $('#editSandfangInfo').hide();
     // show regular pane with new info
@@ -498,7 +544,18 @@ $('#registrerTommingForm').submit(function (e) {
       url: '/api/pois/tomming',
       data: formData
     })
-    .done(function () {
+    .done(function (data) {
+
+      let lastTomming = new Date(Math.max.apply(null, data.map(function(e) {
+        return new Date(e.regdato);
+      })));
+      if (isValidDate(lastTomming)) {
+        let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
+      $('.last-tomming').text(lastTommingFormatted);
+      } else {
+        $('.last-tomming').text("Ukjent");
+      }
+
       // reset formData
       $('#registrerTommingForm').trigger("reset");
       // add new tomming to list
@@ -550,7 +607,8 @@ $('#infoModal').on('hidden.bs.modal', function () {
   // Make sure skade info is shown after the modal is closed
   $('#sandfangInfo').show();
   $('#editSandfangInfo').hide();
-  $('#exampleCheck1').prop('checked', 0);
+  $('span.text-right.kritiskBool').css('color','black');
+  // $('#exampleCheck1').prop('checked', 0);
 });
 
 // click lagre object
