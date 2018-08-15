@@ -1,6 +1,7 @@
 const express     = require('express'),
 path              = require('path'),
 bodyParser        = require("body-parser");
+multer            = require('multer');
 
 // Init app
 const app = express();
@@ -9,6 +10,8 @@ const app = express();
 const pois = require('./api/pois');
 //const map = require('./routes/map');
 const map = require('./routes/map');
+const upload = require('./routes/imgupload');
+
 
 // Load view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -22,9 +25,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // mount the pois api on the route api/pois
 app.use('/api/pois', pois);
-
-// map pages
 app.use('/', map);
+app.use('/upload', upload);
 
 // catch 404 and forward error to handler
 // app.use(function(req, res, next) {
@@ -40,6 +42,10 @@ app.use('/', map);
 //     message: err.message,
 //     error: req.app.get('env') === 'development' ? err : {}
 //   });
+// });
+
+// app.post('/upload', (req, res) => {
+//   res.send('test');
 // });
 
 // Start Server

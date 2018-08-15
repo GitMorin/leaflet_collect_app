@@ -9,3 +9,4 @@ knexfile.js
 todo.txt
 .gitignore
 .vscode/launch.json
+public/uploads
