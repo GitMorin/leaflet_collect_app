@@ -571,6 +571,7 @@ $('#imageForm').submit(function(e) {
   e.preventDefault();
 
   let form = $('#imageForm')[0];
+  // test what happens if this is serialized as normal now when it works
   let formData = new FormData(form);
 
   //var formData = new FormData($("myImage")[0]);//data = $("myImage")
@@ -598,6 +599,9 @@ $('#imageForm').submit(function(e) {
       dataType: "json",
       data: data,
     }).done(function(data){
+      $('#asset-image').attr("src", '../' + data.img_name)
+      $(".custom-file-label").text('');
+      $("#imageForm").hide();
       console.log(`Updated img_name for id ${current_id} with ${data.img_name}`);
       //console.log(JSON.stringify(data));
       // show image on page
