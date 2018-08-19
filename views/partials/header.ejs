@@ -312,16 +312,16 @@
           <!-- Sandfang skade pane end -->
 
           <div class="tab-pane" id="sandfangBilde">
-            <%= typeof msg != 'undefined' ? msg : '' %>
-            <img src="<%= typeof file != 'undefined' ? file : '' %>" class="img-fluid">
-            <form action="/upload" method="POST" enctype="multipart/form-data">
+            <!--<%= typeof msg != 'undefined' ? msg : '' %>
+            <!--<img src="<%= typeof file != 'undefined' ? file : '' %>" class="img-fluid">-->
+            <form action="/upload" method="POST" enctype="multipart/form-data" id="imageForm">
               <div class="custom-file">
-                <input  name="myImage" type="file" class="custom-file-input" id="customFile">
+                <input  name="myImage" type="file" class="custom-file-input" id="myImage">
                 <label class="custom-file-label" for="customFile">Inget bilde valgt..</label>
               </div>
               <br>
               <br>
-              <input class="btn btn-info btn-sm" type="submit" value="Last opp">
+              <input id="submitImage" class="btn btn-info btn-sm" type="submit" value="Last opp">
             </form>
           </div>
         </div>

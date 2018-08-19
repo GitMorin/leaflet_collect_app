@@ -566,6 +566,45 @@ $('#registrerTommingForm').submit(function (e) {
     })
 });
 
+//post image
+$('#imageForm').submit(function(e) {
+  e.preventDefault();
+
+  let form = $('#imageForm')[0];
+  let formData = new FormData(form);
+
+  //var formData = new FormData($("myImage")[0]);//data = $("myImage")
+  //let formData = $(this).serialize();
+  console.log(formData);
+  //let formData = new FormData(this);
+  $.post({
+    type: 'POST',
+    url: '/upload',
+    data: formData,
+    enctype: 'multipart/form-data',
+    cache : false,
+    contentType: false,
+    processData: false,
+  }).done(function(data){
+    // changing objekt key name from file to img_name
+    // not neccesary but increase readability
+    // migt want to strip off the file path from the file name
+    data.img_name = data.file
+    delete data.file;
+    console.log(JSON.stringify(data));
+    $.ajax({
+      url: '/upload/' + current_id,
+      type: 'PUT',
+      dataType: "json",
+      data: data,
+    }).done(function(data){
+      console.log(`Updated img_name for id ${current_id} with ${data.img_name}`);
+      //console.log(JSON.stringify(data));
+      // show image on page
+    });
+  });
+});
+
 // when infoModal close do actions
 $('#infoModal').on('hidden.bs.modal', function () {
   console.log('clicked outside modal');

@@ -39,30 +39,29 @@ function checkFileType(file, cb){
 }
 
 // Post image and update image to db
-router.post('/', function (req, res) {
-  upload(req, res, function (err) {
-    if (err) {
-      res.render('../views/pages/map', {
-        msg: err
-      });
-    } else {
-      if(req.file == undefined){
-        res.render('../views/pages/map', {
-          msg: 'Error: No File Selected'
-        });
-      } else {
-        queries.updateImgName(303, req.file.filename)
-        .then(function() {
-          res.render('../views/pages/map', {
-            msg: 'File Uploaded!',
-            file: `uploads/${req.file.filename}`
-          });
-          //need error handling here if db was not updated
-        })
-      }
-    }
-  });
-});
+// router.post('/', function (req, res) {
+//   upload(req, res, function (err) {
+//     if (err) {
+//       res.render('../views/pages/map', {
+//         msg: err
+//       });
+//     } else {
+//       if(req.file == undefined){
+//         res.render('../views/pages/map', {
+//           msg: 'Error: No File Selected'
+//         });
+//       } else {
+//         //queries.updateImgName(req.params.id, req.file.filename)
+//           res.render('../views/pages/map', {
+//             msg: 'File Uploaded!',
+//             file: `uploads/${req.file.filename}`
+//           });
+//           res.send({file: `uploads/${req.file.filename}`});
+//           //need error handling here if db was not updated
+//       }
+//     }
+//   });
+// });
 
 // router.post('/', function (req, res) {
 //   upload(req, res, function (err) {
@@ -80,24 +79,33 @@ router.post('/', function (req, res) {
 //         // Or, make this a put request instead seem to make more senese
 //         // call queries update and update poi with file name
 //         // then... set img src...
-//         res.render('../views/pages/map', {
-//           msg: 'File Uploaded!',
-//           file: `uploads/${req.file.filename}`
-//         });
+//         res.json({file: `uploads/${req.file.filename}`});
+//         // res.render('../views/pages/map', {
+//         //   msg: 'File Uploaded!',
+//         //   file: `uploads/${req.file.filename}`
+//         // });
 //       }
 //     }
 //   });
 // });
 
-// update pois
-// router.put('/:id', (req, res) => {
-//   queries.update(req.params.id, req.body)
-//     .then(pois => {
-//       res.json(pois[0]);
-//     })
-//     .catch(err => {
-//       console.error('Update POI error', err);
-//     });
-// });
+router.post('/', function (req, res) {
+  upload(req, res, function (err) {
+    console.log(req.file);
+    //res.end();
+    res.send({file: `uploads/${req.file.filename}`});
+  });
+});
+
+// imagePath
+router.put('/:id', (req, res) => {
+  queries.updateImgName(req.params.id, req.body)
+    .then(pois => {
+      res.json(pois[0]);
+    })
+    .catch(err => {
+      console.error('Update image error', err);
+    });
+});
 
 module.exports = router;
