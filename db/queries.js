@@ -8,8 +8,8 @@ const db = knex({
   dialect: 'postgres'
 });
 
-const allPois = "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(ST_Transform(lg.geom,4326))::json As geometry , row_to_json((SELECT l FROM (SELECT id, merkned, regdate, asset_type, kritisk_merkned) As l)) As properties FROM poi As lg   ) As f )  As fc;";
-const getLast = "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(ST_Transform(lg.geom,4326))::json As geometry , row_to_json((SELECT l FROM (SELECT id, merkned, regdate, asset_type, kritisk_merkned) As l)) As properties FROM poi As lg order by id desc limit 1 ) As f )  As fc;";
+const allPois = "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(ST_Transform(lg.geom,4326))::json As geometry , row_to_json((SELECT l FROM (SELECT id, merkned, regdate, asset_type, kritisk_merkned, img_name) As l)) As properties FROM poi As lg   ) As f )  As fc;";
+const getLast = "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(ST_Transform(lg.geom,4326))::json As geometry , row_to_json((SELECT l FROM (SELECT id, merkned, regdate, asset_type, kritisk_merkned, img_name) As l)) As properties FROM poi As lg order by id desc limit 1 ) As f )  As fc;";
 
 module.exports = {
   getAll() {

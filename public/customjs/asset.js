@@ -293,6 +293,11 @@ function showInfo(current_id, layer) {
     $(".object-info").text(data.asset_type);
     $('#infoMerknedTextArea').val(data.merkned);
     $("#editMerknedTextArea").val(data.merkned);
+    if (data.img_name != null) {
+      $('#asset-image').attr("src", '../' + data.img_name);
+      $("#imageForm").hide();
+      // add small camera icon or something if image exist
+    }
     if (data.kritisk_merkned == true) {
       $('span.text-right.kritiskBool').css('color','red');
       console.log('setting checkbox to cheked')
@@ -604,7 +609,7 @@ $('#imageForm').submit(function(e) {
       $("#imageForm").hide();
       console.log(`Updated img_name for id ${current_id} with ${data.img_name}`);
       //console.log(JSON.stringify(data));
-      // show image on page
+      // make function to clear form and image when modal close
     });
   });
 });
@@ -637,6 +642,12 @@ $('#infoModal').on('hidden.bs.modal', function () {
   $('#editSandfangInfo').hide();
   $('span.text-right.kritiskBool').css('color','black');
   // $('#exampleCheck1').prop('checked', 0);
+
+  // Bilde tab
+  // remove src attr
+  $(".custom-file-label").text('Inget bilde valgt...'); // inget bilde valgt
+  $('#asset-image').attr("src", '');
+  $("#imageForm").show();
 });
 
 // click lagre object
