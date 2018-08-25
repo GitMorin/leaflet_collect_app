@@ -38,7 +38,7 @@ router.post('/', function(req, res) {
   upload(req, res, function (err) {
     console.log(req.file);
     // sharp config
-    let width = 350;
+    let width = 500;
     //let height = null;
     sharp(req.file.path) //place where sharp find image
     .resize(width, null)
