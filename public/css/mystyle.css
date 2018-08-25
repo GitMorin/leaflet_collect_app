@@ -333,16 +333,3 @@ label span.label-text {
   opacity: 0.7;
   border-radius: 9px;
 }
-
-.object-info {
-  text-transform: capitalize;
-}
-
-.text-left-test {
-  overflow: auto;
-  height: auto;
-}
-
-.custom-file-input ~ .custom-file-label::after {
-  content: "Elegir";
-}

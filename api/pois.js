@@ -24,6 +24,17 @@ router.get('/last', (req, res) => {
     });
 });
 
+// get all pois as wkt
+router.get('/wkt', (req, res) => {
+  queries.getAllwkt()
+    .then(pois => {
+      res.json(pois);
+    })
+    .catch(err => {
+      console.error('Get all poi as WKT error', err);
+    });
+});
+
 // post new tomming
 router.post('/tomming', (req, res) => {
   queries.createTomming(req.body)
@@ -58,10 +69,18 @@ router.post('/skade', (req, res) =>
     obj.poi_id = poi_id;
     console.log(e)
     obj.skade_type = e;
+    //console.log(obj.skade_type)
     console.log(obj);
     data.push(obj);
   });
   console.log(data)
+
+  // let damages = req.body;
+  // let damagetoDB = {}
+  // damagetoDB.poi_id = damages.poi_id
+  // damagetoDB.skade_type = damages.skade_type
+  // console.log(damagetoDB);
+  //data = [{poi_id:50, skade_type:"dykkert"},{poi_id:50, skade_type:"skadet_kumrug"}];
   queries.createSkade(data)
     .then(skader => {
       res.json(skader);
@@ -75,6 +94,8 @@ router.post('/skade', (req, res) =>
     });
 });
 
+
+
 router.get('/skade/:id', (req, res) => {
   queries.getSkade(req.params.id)
   .then(skade => {
@@ -85,6 +106,25 @@ router.get('/skade/:id', (req, res) => {
   });
 });
 
+// TODO: Error if there is not any comments to the array, this return an empty array if no records found, handle this error!
+// get comments
+// router.get('/comments/:id', (req, res) => {
+//   queries.comments(req.params.id)
+//   .then(comments => {
+//     res.json(comments);
+//     //res.send(comments);
+//     //res.render('comments', ({ comments: comments }));
+//   })
+//   .catch(function (err) {
+//     console.error('get comment error ' + err);
+//   });
+// });
+
+// TODO: Add error handler for id does not exist
+//get one poi
+// if (!result.length)
+// if(result.length != 0)
+
 router.get('/:id', (req, res, next) => {
   queries.getOne(req.params.id)
     .then(poi => {
@@ -92,13 +132,40 @@ router.get('/:id', (req, res, next) => {
         console.log(poi);
         res.json(poi);
       } else {
-        alert('something went wrong')
+        // this is not necessary because we have the middlwear already
+        //res.status(404);
+        //next(new Error('Not found'));
+        next();
       }
     })
     .catch(err => {
       console.error('Get one id error', err);
     });
 });
+
+//TODO: This has example of validating input to be used later
+// create new poi
+// router.post('/', (req, res, next) => {
+//   console.log(req.body.asset_type);
+//   if (validPoi(req.body)) {
+//     const poi = {
+//       // place: req.body.place,
+//       asset_type: req.body.asset_type,
+//       // numbers: req.body.inputNumber,
+//       geom: 'POINT(' + req.body.xCoord + ' ' + req.body.yCoord + ')',
+//     };
+//     queries.create(poi)
+//       //.then(console.log('hepp'))
+//     .then(res.redirect('/map'))
+//     //   res.json(poi[0]);
+//     //  })
+//     .catch(err => {
+//       console.error('New poi error', err);
+//     });
+//   } else {
+//     next(new Error('Post - Invalid poi'));
+//   }
+// });
 
 router.post('/', (req, res) => {
   console.log(req.body.asset_type);
@@ -114,20 +181,28 @@ router.post('/', (req, res) => {
     console.log(poi[0]);
     res.json(poi[0]);
   })
-   .catch(err => {
+    
+  //.then(res.redirect('/map'))
+  //   res.json(poi[0]);
+  //  })
+  .catch(err => {
     console.error('New poi error', err);
   });
 });
 
 // update pois
-router.put('/:id', (req, res) => {
-  queries.update(req.params.id, req.body)
+router.put('/:id', isValidId, (req, res) => {
+  if (validPoi(req.body)) {
+    queries.update(req.params.id, req.body)
     .then(pois => {
       res.json(pois[0]);
     })
     .catch(err => {
       console.error('Update POI error', err);
     });
+  } else {
+    next(new Error('Invalid poi'));
+  }
 });
 
 // update skader
@@ -154,12 +229,27 @@ router.delete('/:id', isValidId, (req, res) => {
   });
 });
 
-
-
 // Middlewear check if id is valid
 function isValidId(req, res, next) {
   if (!isNaN(req.params.id)) return next();
   next(new Error('Invalid ID'));
 }
+
+// function validPoi(poi) {
+//   // if the place a string and does not have a value inside of it
+//   const hasPlace = typeof poi.place == 'string' && poi.place.trim() != '';
+//   // const hasComment = typeof poi.comments == 'string' && poi.comments.trim() != '';
+//   const hasNumber = typeof poi.number != 'undefined' &&
+//   !isNaN(Number(poi.number));
+//   //const hasNumber = typeof poi.numbers == 'string' && poi.numbers.trim() != '';
+//   return hasPlace && hasNumber;
+// }
+
+// function validPoi(poi) {
+//   // if the place a string and does not have a value inside of it
+//   const asset_type = typeof poi.asset_type == 'string'
+//   //const hasNumber = typeof poi.numbers == 'string' && poi.numbers.trim() != '';
+//   return asset_type;
+// }
 
 module.exports = router;

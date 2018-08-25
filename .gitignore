@@ -8,5 +8,3 @@ knexfile.js
 .jshintrc
 todo.txt
 .gitignore
-.vscode/launch.json
-public/uploads

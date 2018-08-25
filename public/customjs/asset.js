@@ -93,8 +93,8 @@ $("#btnEditSandfangInfo").click(function (e) {
 
 // If avbrut if clicked go back to info list
 $('#hideEditSandfangInfoForm').click(function (e) {
-  $('#editSandfangInfo').hide();
   $('#sandfangInfo').show();
+  $('#editSandfangInfo').hide();
 })
 
 // Click edit button to hide list and show form
@@ -178,12 +178,9 @@ strindasluk.on('click', markerOnClick);
 
 function markerOnClick(e) {
   current_id = e.layer.feature.properties.id;
-  console.log('clicked feature')
-  //merkned = e.layer.feature.properties.merkned;
-  //kritisk_merkned = e.layer.feature.properties.kritisk_merkned;
-  //console.log(current_id,kritisk_merkned,merkned)
+  console.log(current_id)
   showInfo(current_id, e.layer.feature);
-};
+}
 
 var tempIcon = L.icon({
   iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -196,15 +193,13 @@ var tempIcon = L.icon({
   shadowSize: [41, 41]
 });
 
-function isValidDate(d) {
-  return d instanceof Date && !isNaN(d);
-}
 
 // get feature of layer to be used to fill modal!
 // THIS WORKS but should probably be refactored...
 function showInfo(current_id, layer) {
   console.log(layer)
   // Make ajax call to populate lists
+
   //current_id = e.layer.feature.properties.id;
 
   // get tomming
@@ -213,17 +208,6 @@ function showInfo(current_id, layer) {
       url: url
     })
     .done(function (data) {
-      // set last tomming in modal
-      let lastTomming = new Date(Math.max.apply(null, data.map(function(e) {
-        return new Date(e.regdato);
-      })));
-      if (isValidDate(lastTomming)) {
-        let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
-      $('.last-tomming').text(lastTommingFormatted);
-      } else {
-        $('.last-tomming').text("Ukjent");
-      }
-
       let i = 0;
       var dager = ["Søndag", "Mondag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
       data.forEach(function (tomming) {
@@ -251,6 +235,7 @@ function showInfo(current_id, layer) {
     })
     .done(function (data) {
       // add skade to list
+      console.log(data);
       data.forEach(function (skade) {
         let skaderid = skade.skader_id;
         let rename = renameSkade(skade.skade_type);
@@ -277,38 +262,14 @@ function showInfo(current_id, layer) {
       console.log('Status: ' + status + '\n' + 'Error: ' + error);
     });
 
-  // populated infoForm
-  //console.log(layer.properties.merkned)
-  
-  // NEED TO GET NEW DATA FROM DATABASE!
-  let getOneUrl = '/api/pois/' + current_id;
-  $.get({
-    url: getOneUrl
-  })
-  .done(function(data){
-    console.log(current_id);
-    console.log('appending ' + data.merkned);
-    $(".featureType").append(data.asset_type);
-    $(".featureId").append(current_id);
-    $(".object-info").text(data.asset_type);
-    $('#infoMerknedTextArea').val(data.merkned);
-    $("#editMerknedTextArea").val(data.merkned);
-    if (data.img_name != null) {
-      $('#asset-image').attr("src", '../' + data.img_name);
-      $("#imageForm").hide();
-      // add small camera icon or something if image exist
-    }
-    if (data.kritisk_merkned == true) {
-      $('span.text-right.kritiskBool').css('color','red');
-      console.log('setting checkbox to cheked')
-        $('#checkKritisk').prop('checked', 1);
-        $('.kritiskBool').text('Ja');
-    } else {
-      $('.kritiskBool').text('Nei')
-      $('span.text-right.kritiskBool').css('color','black');};
-      $('#checkKritisk').prop('checked', 0);
-  });
+  $(".featureType").text('');
+  $(".featureId").text('');
+  $(".featurePlace").text('');
+  $(".featureRegdate").text('');
+  $(".featureType").append(layer.properties.asset_type);
 
+  $(".featureId").append(current_id);
+  $(".featurePlace").append(layer.properties.place);
   let regdato = new Date(layer.properties.regdate);
   $(".featureRegdate").append(regdato.getDate() + '.' + (regdato.getMonth() + 1) + '.' + regdato.getFullYear());
   $("#infoModal").modal();
@@ -452,7 +413,7 @@ function postDamage(damage) {
         <li class="list-group-item list-group-item-action">
           <span>
           ${renameSkade(e.skade_type)}
-          </span>
+          </span> 
           <form action="api/pois/skade/${e.skader_id}/edit" class="edit-skader-form">
               <input type="hidden" value="${e.skade_type}" name="skade_type">
               <input type="hidden" value="${e.skader_id}" name="skader_id">
@@ -474,50 +435,6 @@ function postDamage(damage) {
   $('#sandfangSkadeInfo').show();
  }
 
- // Update poi info
-$('#infoForm').submit(function(e) {
-  e.preventDefault();
-  let formData = $(this).serializeArray();
-  let url = '/api/pois/' + current_id;
-  console.log(url);
-  console.log(formData);
-  if ( $('#checkKritisk').is(':checked') ) {
-   // do nothing
-  } else {
-    formData.push({name: "kritisk_merkned", value: "false"})
-    console.log('added false checked');
-};
-
-  $.ajax({
-    type: 'PUT',
-    url: url,
-    data: formData
-  }).done(function(data){
-    console.log(data.merkned);
-  //  $('#infoForm').trigger("reset");
-    $("#infoMerknedTextArea").val(data.merkned);
-    if (data.kritisk_merkned == true) {
-      //set info Kritisk merked ja/nei
-      console.log('setting checkbox to cheked')
-        $('.kritiskBool').text('Ja').css('.text-danger');
-        $('span.text-right.kritiskBool').css('color','red');
-      }  else {
-        $('.kritiskBool').text('Nei')
-        $('span.text-right.kritiskBool').css('color','black')};
-    
-      // set edit form check kritisk merkned t/f
-    if (data.kritisk_merkned == true) {
-        $('#checkKritisk').prop('checked', 1);
-      }  else $('#checkKritisk').prop('checked', 0);  
-
-    $('#sandfangInfo').show();
-    $('#editSandfangInfo').hide();
-    // show regular pane with new info
-    // clear form on close modal
-    console.log('data sent to server ' + data)
-  });
-});
-
 $('#registrerTommingForm').submit(function (e) {
   e.preventDefault();
   let formData = $(this).serializeArray();
@@ -526,6 +443,8 @@ $('#registrerTommingForm').submit(function (e) {
     value: current_id
   });
   console.log(formData);
+  // does not work, need to append the id that was clicked somehow!?
+  //console.log(e.layer.feature.properties.id);
   let fyllingsgrad = formData[0].value;
   console.log(fyllingsgrad);
 
@@ -534,18 +453,7 @@ $('#registrerTommingForm').submit(function (e) {
       url: '/api/pois/tomming',
       data: formData
     })
-    .done(function (data) {
-
-      let lastTomming = new Date(Math.max.apply(null, data.map(function(e) {
-        return new Date(e.regdato);
-      })));
-      if (isValidDate(lastTomming)) {
-        let lastTommingFormatted = lastTomming.getDate() + '.' + (lastTomming.getMonth() + 1) + '.' + lastTomming.getFullYear();
-      $('.last-tomming').text(lastTommingFormatted);
-      } else {
-        $('.last-tomming').text("Ukjent");
-      }
-
+    .done(function () {
       // reset formData
       $('#registrerTommingForm').trigger("reset");
       // add new tomming to list
@@ -571,57 +479,12 @@ $('#registrerTommingForm').submit(function (e) {
     })
 });
 
-//post image
-$('#imageForm').submit(function(e) {
-  e.preventDefault();
-
-  let form = $('#imageForm')[0];
-  // test what happens if this is serialized as normal now when it works
-  let formData = new FormData(form);
-
-  //var formData = new FormData($("myImage")[0]);//data = $("myImage")
-  //let formData = $(this).serialize();
-  console.log(formData);
-  //let formData = new FormData(this);
-  $.post({
-    type: 'POST',
-    url: '/upload',
-    data: formData,
-    enctype: 'multipart/form-data',
-    cache : false,
-    contentType: false,
-    processData: false,
-  }).done(function(data){
-    // changing objekt key name from file to img_name
-    // not neccesary but increase readability
-    // migt want to strip off the file path from the file name
-    data.img_name = data.file
-    delete data.file;
-    console.log(JSON.stringify(data));
-    $.ajax({
-      url: '/upload/' + current_id,
-      type: 'PUT',
-      dataType: "json",
-      data: data,
-    }).done(function(data){
-      $('#asset-image').attr("src", '../' + data.img_name)
-      $(".custom-file-label").text('');
-      $("#imageForm").hide();
-      console.log(`Updated img_name for id ${current_id} with ${data.img_name}`);
-      //console.log(JSON.stringify(data));
-      // make function to clear form and image when modal close
-    });
-  });
-});
-
 // when infoModal close do actions
 $('#infoModal').on('hidden.bs.modal', function () {
-  console.log('clicked outside modal');
   // Make first tab active in modal
   $('#sandfangLogTable > tbody > tr:nth-child(n+1)').remove(); // clear Tømming log table
   $('a.nav-item').removeClass('active');
   $('a.nav-item:first').addClass('active');
-
 
   // Clear Skade table
   $('.list-group.skadeLog > li:nth-child(n+2)').remove();
@@ -633,21 +496,9 @@ $('#infoModal').on('hidden.bs.modal', function () {
   // reset to show all checkboxes when modal close
   $('#registrerSkadeForm label').show();
 
-  $(".featureType").text('');
-  $(".featureId").text('');
-  $(".featureRegdate").text('');
-
   // Make sure skade info is shown after the modal is closed
-  $('#sandfangInfo').show();
-  $('#editSandfangInfo').hide();
-  $('span.text-right.kritiskBool').css('color','black');
-  // $('#exampleCheck1').prop('checked', 0);
-
-  // Bilde tab
-  // remove src attr
-  $(".custom-file-label").text('Inget bilde valgt...'); // inget bilde valgt
-  $('#asset-image').attr("src", '');
-  $("#imageForm").show();
+  $('#editSandfangSkade').hide();
+  $('#sandfangSkadeInfo').show();
 });
 
 // click lagre object
@@ -768,16 +619,4 @@ $('#allatyper-checkbox').on('click', function() {
 
 $('#myDropdown').on('click', function(event) {
   event.stopPropagation();
-});
-
-$("input[type=file]").change(function () {
-  var fieldVal = $(this).val();
-
-  // Change the node's value by removing the fake path (Chrome)
-  fieldVal = fieldVal.replace("C:\\fakepath\\", "");
-  if (fieldVal != undefined || fieldVal != "") {
-    $(this).next(".custom-file-label").attr('data-content', fieldVal);
-    $(this).next(".custom-file-label").text(fieldVal);
-  }
-
 });
