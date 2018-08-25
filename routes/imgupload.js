@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const router = express.Router();
 const queries = require('../db/queries');
+const sharp = require('sharp');
 
 // Set Storage Engine
 const storage = multer.diskStorage({
@@ -15,7 +16,6 @@ const storage = multer.diskStorage({
 // Init Upload
 const upload = multer({
   storage: storage,
-  // does not work
   limits:{fileSize: 1000000000},
   fileFilter: function(req, file, cb){
     checkFileType(file, cb)
@@ -24,78 +24,50 @@ const upload = multer({
 
 // check File Type
 function checkFileType(file, cb){
-  // Allowed ext
-  const filetypes = /jpeg|jpg|png|gif/;
-  // check ext
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  // check mime
-  const mimetype = filetypes.test(file.mimetype);
-
+  const filetypes = /jpeg|jpg|png|gif/; // Allowed ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase()); // check extension
+  const mimetype = filetypes.test(file.mimetype); // check mime
   if(mimetype && extname){
     return cb(null, true);
   } else {
     cb('Error: Images Only!');
-  }
-}
+  };
+};
 
-// Post image and update image to db
-// router.post('/', function (req, res) {
-//   upload(req, res, function (err) {
-//     if (err) {
-//       res.render('../views/pages/map', {
-//         msg: err
-//       });
-//     } else {
-//       if(req.file == undefined){
-//         res.render('../views/pages/map', {
-//           msg: 'Error: No File Selected'
-//         });
-//       } else {
-//         //queries.updateImgName(req.params.id, req.file.filename)
-//           res.render('../views/pages/map', {
-//             msg: 'File Uploaded!',
-//             file: `uploads/${req.file.filename}`
-//           });
-//           res.send({file: `uploads/${req.file.filename}`});
-//           //need error handling here if db was not updated
-//       }
-//     }
-//   });
-// });
-
-// router.post('/', function (req, res) {
-//   upload(req, res, function (err) {
-//     if (err) {
-//       res.render('../views/pages/map', {
-//         msg: err
-//       });
-//     } else {
-//       if(req.file == undefined){
-//         res.render('../views/pages/map', {
-//           msg: 'Error: No File Selected'
-//         });
-//       } else {
-//         // send id as params and then send the filename and id to another updata route?
-//         // Or, make this a put request instead seem to make more senese
-//         // call queries update and update poi with file name
-//         // then... set img src...
-//         res.json({file: `uploads/${req.file.filename}`});
-//         // res.render('../views/pages/map', {
-//         //   msg: 'File Uploaded!',
-//         //   file: `uploads/${req.file.filename}`
-//         // });
-//       }
-//     }
-//   });
-// });
-
-router.post('/', function (req, res) {
+router.post('/', function(req, res) {
   upload(req, res, function (err) {
     console.log(req.file);
-    //res.end();
-    res.send({file: `uploads/${req.file.filename}`});
-  });
+    // sharp config
+    let width = 350;
+    //let height = null;
+    sharp(req.file.path) //place where sharp find image
+    .resize(width, null)
+    .toFile('./public/uploads/thumb/thumb_'+req.file.originalname, function(err){
+      console.log('sharp worked!')
+      if(!err){
+        //res.send({file: `uploads/${req.file.filename}`});
+        res.send({file: `uploads/thumb/thumb_${req.file.originalname}`});
+      }
+    });
+  }); 
 });
+
+
+// router.post('/', function (req, res) {
+//   upload(req, res, function (err) {
+//     console.log(req.file);
+//     //res.end();
+//     res.send({file: `uploads/${req.file.filename}`});
+//   });
+// });
+
+// router.post('/', function (req, res) {
+//   upload(req, res, function (err) {
+//     console.log(req.file);
+//     //res.end();
+//     res.send({file: `uploads/${req.file.filename}`});
+//   });
+// });
 
 // imagePath
 router.put('/:id', (req, res) => {
