@@ -8,3 +8,6 @@ knexfile.js
 .jshintrc
 todo.txt
 .gitignore
+
+public/uploads/*jpg
+public/uploads/thumb/*jpg
